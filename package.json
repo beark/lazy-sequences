@@ -1,0 +1,45 @@
+{
+    "name": "lazy-sequences",
+    "version": "0.9.0",
+    "description": "Library of lazy sequences",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib/"
+    ],
+    "keywords": [
+        "async",
+        "functional",
+        "iterable",
+        "iterators",
+        "lazy",
+        "sequence",
+        "typescript"
+    ],
+    "author": "Björn Aili <4073478+beark@users.noreply.github.com> (https://github.com/beark)",
+    "repository": "github:beark/lazy-sequences",
+    "homepage": "https://github.com/beark/lazy-sequences",
+    "bugs": "https://github.com/beark/lazy-sequences/issues",
+    "scripts": {
+        "build": "./node_modules/.bin/tsc --project tsconfig.json",
+        "test": "jest",
+        "tsc": "./node_modules/.bin/tsc"
+    },
+    "devDependencies": {
+        "@types/jest": "^24.0.11",
+        "jest": "^24.5.0",
+        "ts-jest": "^24.0.0",
+        "tslint": "^5.14.0",
+        "tslint-config-prettier": "^1.18.0",
+        "typescript": "^3.3.4000"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "globals": {
+            "ts-jest": {
+                "tsConfig": "tsconfig.json"
+            }
+        }
+    }
+}
