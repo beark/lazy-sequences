@@ -5,8 +5,8 @@ if (typeof (Symbol as any).asyncIterator === "undefined") {
         Symbol.asyncIterator || Symbol("asyncIterator")
 }
 
-import { Seq } from "../Seq"
-import { AsyncSeq } from "./index"
+import Seq from "../"
+import AsyncSeq from "./"
 
 describe("export sanity", () => {
     it("constructing a Seq works", () => {

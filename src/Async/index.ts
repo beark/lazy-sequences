@@ -19,4 +19,5 @@ AsyncSeq.prototype.collectSeq = function() {
     return this.collect().then(arr => new Seq(arr))
 }
 
+export default AsyncSeq
 export { AsyncSeq }

@@ -525,3 +525,5 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
         return new AsyncSeq(new ZipWithAsyncIterable(f, this.xs, it))
     }
 }
+
+export default AsyncSeq

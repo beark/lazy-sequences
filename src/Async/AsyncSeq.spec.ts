@@ -4,7 +4,7 @@ if (typeof (Symbol as any).asyncIterator === "undefined") {
         Symbol.asyncIterator || Symbol("asyncIterator")
 }
 
-import { AsyncSeq } from "./AsyncSeq"
+import AsyncSeq from "./AsyncSeq"
 
 describe("AsyncSeq", () => {
     describe("all", () => {
