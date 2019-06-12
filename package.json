@@ -1,6 +1,6 @@
 {
     "name": "lazy-sequences",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "description": "Library of lazy sequences",
     "license": "MIT",
     "main": "lib/index.js",
@@ -27,12 +27,12 @@
         "tsc": "./node_modules/.bin/tsc"
     },
     "devDependencies": {
-        "@types/jest": "^24.0.11",
-        "jest": "^24.5.0",
-        "ts-jest": "^24.0.0",
-        "tslint": "^5.14.0",
+        "@types/jest": "^24.0.13",
+        "jest": "^24.8.0",
+        "ts-jest": "^24.0.2",
+        "tslint": "^5.17.0",
         "tslint-config-prettier": "^1.18.0",
-        "typescript": "^3.3.4000"
+        "typescript": "^3.5.1"
     },
     "jest": {
         "preset": "ts-jest",
