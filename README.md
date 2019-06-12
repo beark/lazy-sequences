@@ -47,7 +47,19 @@ $ npm install --save lazy-sequences
 Or whatever the equivalent is for your favorite package manager. That should set you up regardless of whether you prefer JS or TS. To actually use the library, you'd typically just:
 
 ```ts
+// Using typescript or some other platform with ES modules
+import Seq from 'lazy-sequences';
+
+// Or
 import { Seq } from 'lazy-sequences';
+```
+
+```js
+// Using node/commonjs style requires
+const { Seq } = require('lazy-sequences');
+
+// Or
+const S = require('lazy-sequences').default;
 ```
 
 ## Async sequences
@@ -55,7 +67,9 @@ import { Seq } from 'lazy-sequences';
 In addition to regular lazy sequences, `lazy-sequences` also provides _async_ lazy sequences. Just like `Seq`, in some sense, is a fluent/functional wrapper of `Iterable`s, `AsyncSeq` is kind of a wrapper of `AsyncIterable`. A quick example:
 
 ```ts
-import { AsyncSeq } from 'lazy-sequences/lib/Async';
+import AsyncSeq from 'lazy-sequences/lib/Async';
+// Or in commonjs:
+// const { AsyncSeq } = require('lazy-sequences/lib/Async');
 
 const seq = new AsyncSeq(someAsyncIterable);
 
@@ -68,7 +82,7 @@ const seq2 = seq
 const result = await seq2.any(s => s.indexOf('foo') !== -1);
 ```
 
-Note that to use asynchronous sequences you may have to add a shim for `Symbol.asyncIterator`. If so, it should be defined _before_ importing `AsyncSeq`. So, something like this:
+Note that to use asynchronous sequences you may have to add a shim for `Symbol.asyncIterator`. If so, it should be defined _before_ importing `AsyncSeq`. So, something like this in TypeScript:
 
 ```ts
 if (
@@ -80,5 +94,15 @@ if (
       || Symbol("asyncIterator");
 }
 
-import { AsyncSeq } from 'lazy-sequences/lib/Async';
+import AsyncSeq from 'lazy-sequences/lib/Async';
+```
+
+Or something like this in JS (assuming commonjs):
+
+```js
+if (typeof Symbol.asyncIterator === "undefined") {
+    Symbol.asyncIterator = Symbol.asyncIterator || Symbol("asyncIterator");
+}
+
+const { AsyncSeq } = require('lazy-sequences/lib/Async');
 ```
