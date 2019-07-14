@@ -27,12 +27,12 @@
         "tsc": "./node_modules/.bin/tsc"
     },
     "devDependencies": {
-        "@types/jest": "^24.0.13",
+        "@types/jest": "^24.0.15",
         "jest": "^24.8.0",
         "ts-jest": "^24.0.2",
-        "tslint": "^5.17.0",
+        "tslint": "^5.18.0",
         "tslint-config-prettier": "^1.18.0",
-        "typescript": "^3.5.1"
+        "typescript": "^3.5.3"
     },
     "jest": {
         "preset": "ts-jest",
