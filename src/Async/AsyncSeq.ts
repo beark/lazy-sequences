@@ -65,12 +65,10 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *                        `xs`, and then starts over in an infinite cycle.
      * @template T
      * @example
-     * ```ts
      * await AsyncSeq
      *   .cycle(AsyncSeq.fromIterable([1,2]))
      *   .take(5)
      *   .collect() === [1,2,1,2,1]
-     * ```
      */
     static cycle<T>(xs: AsyncIterable<T>): AsyncSeq<T> {
         return new AsyncSeq(new CycleAsyncIterable<T>(xs))
@@ -92,20 +90,18 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * Generate an infinite sequence by repeated application of a given
      * function.
      *
-     * @param {(x: T) => Promise<T> | T} f Function to apply to generate new
-     *                                     values.
+     * @param {(x: T) => Promise<T> | T} f
+     *   Function to apply to generate new values.
      * @param {T} x Initial value.
-     * @returns {AsyncSeq<T>} The sequence of applying `f` infinitely
-     *                        recursively on `x`.
+     * @returns {AsyncSeq<T>}
+     *   The sequence of applying `f` infinitely recursively on `x`.
      * @template T
      * @example
-     * ```ts
      * await AsyncSeq
      *   .iterate(f, x)
      *   .take(4)
      *   .collect()
      *   === [x, f(x), f(f(x)), f(f(f(x)))]
-     * ```
      */
     static iterate<T>(f: (x: T) => Promise<T> | T, x: T): AsyncSeq<T> {
         return new AsyncSeq(new IterateAsyncIterable(f, x))
@@ -125,8 +121,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
     /**
      * Constructs a sequence from any `AsyncIterable`.
      *
-     * @param {AsyncIterable<T>} xs The root iterable that will serve as
-     *                              source of the elements in the sequence.
+     * @param {AsyncIterable<T>} xs
+     *   The root iterable that will serve as source of the elements in the
+     *   sequence.
      */
     constructor(private xs: AsyncIterable<T>) {}
 
@@ -142,8 +139,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * will evaluate the entire sequence.
      *
      * @param {(x: T) => boolean} p Predicate that must be satified.
-     * @returns {Promise<boolean>} True if every element in the sequence
-     *                             satisfied `p`.
+     * @returns {Promise<boolean>}
+     *   True if every element in the sequence satisfied `p`.
      */
     async all(p: (x: T) => boolean): Promise<boolean> {
         for await (const x of this.xs) {
@@ -164,8 +161,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * sequence.
      *
      * @param {(x: T) => boolean} p The predicate to check.
-     * @returns {Promise<boolean>} True if there was at least one element
-     *                             satisfying `p`.
+     * @returns {Promise<boolean>}
+     *   True if there was at least one element satisfying `p`.
      */
     async any(p: (x: T) => boolean): Promise<boolean> {
         for await (const x of this.xs) {
@@ -182,8 +179,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * This obviously evaluates the entire sequence.
      *
-     * @returns {Promise<T[]>} Concrete array with all the values in the
-     *                         sequence.
+     * @returns {Promise<T[]>}
+     *   Concrete array with all the values in the sequence.
      */
     async collect(): Promise<T[]> {
         const result: T[] = []
@@ -209,15 +206,13 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * This method evaluates the entire sequence.
      *
      * @param {AsyncSeq<string>} this The input sequence must contain strings.
-     * @returns {Promise<string>} The result of concatenating all of the
-     *                            elements of the sequence.
+     * @returns {Promise<string>}
+     *   The result of concatenating all of the elements of the sequence.
      * @example
-     * ```ts
      * await AsyncSeq
      *   .fromIterable(["a", "b", "cd"])
      *   .collectString()
      *   === "abcd"
-     * ```
      */
     async collectString(this: AsyncSeq<string>): Promise<string> {
         return this.reduce((result, s) => result.concat(s), "")
@@ -227,10 +222,11 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * Concatenate any iterable, async or not, to the sequence.
      *
      * @nosideeffects
-     * @param {Iterable<T> | AsyncIterable<T>} xs Collection to append to the
-     *                                            input sequence.
-     * @returns {AsyncSeq<T>} Single sequence that will iterate over both the
-     *                        input sequence and the range represented by `xs`.
+     * @param {Iterable<T> | AsyncIterable<T>} xs
+     *   Collection to append to the input sequence.
+     * @returns {AsyncSeq<T>}
+     *   Single sequence that will iterate over both the input sequence and the
+     *   range represented by `xs`.
      */
     concat(xs: Iterable<T> | AsyncIterable<T>): AsyncSeq<T> {
         return new AsyncSeq(new ConcatAsyncIterable(this.xs, xs))
@@ -245,19 +241,17 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * result will evaluate the map multiple times.
      *
      * @nosideeffects
-     * @param {(x: T) => Iterable<U> | AsyncIterable<U>} f Function that will be
-     *                                                     mapped.
-     * @returns {Seq<U>} A sequence that represents having applied `f` to each
-     *                   element in the input sequence and then concatenated all
-     *                   the results.
+     * @param {(x: T) => Iterable<U> | AsyncIterable<U>} f
+     *   Function that will be mapped.
+     * @returns {Seq<U>}
+     *   A sequence that represents having applied `f` to each element in the
+     *   input sequence and then concatenated all the results.
      * @template U
      * @example
-     * ```ts
      * await AsyncSeq.fromIterable([1,2,3])
      *   .concatMap(x => [x*2, x*4])
      *   .collect()
      *   === [2, 4, 4, 8, 6, 12]
-     * ```
      */
     concatMap<U>(f: (x: T) => Iterable<U> | AsyncIterable<U>): AsyncSeq<U> {
         return this.map(f).join()
@@ -281,8 +275,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @nosideeffects
      * @param {number} n The number of elements to drop.
-     * @returns {AsyncSeq<T>} The same sequence as the input, except without the
-     *                   first `n` elements
+     * @returns {AsyncSeq<T>}
+     *   The same sequence as the input, except without the first `n` elements.
      */
     drop(n: number): AsyncSeq<T> {
         return new AsyncSeq(new DropAsyncIterable(n, this.xs))
@@ -292,18 +286,17 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * Drops elements for as long as a given predicate is satisfied by them.
      *
      * @nosideeffects
-     * @param {(x: T) => boolean} p Predicate that determines whether to keep
-     *                              dropping or not.
-     * @returns {AsyncSeq<T>} The same sequence as the input, except without the
-     *                   elements for which `p` returned true.
+     * @param {(x: T) => boolean} p
+     *   Predicate that determines whether to keep dropping or not.
+     * @returns {AsyncSeq<T>}
+     *   The same sequence as the input, except without the elements for which
+     *   `p` returned true.
      * @example
-     * ```ts
      * await AsyncSeq
      *   .fromIterable([1,2,3,4,5])
      *   .dropWhile(x => x < 3)
      *   .collect()
      *   === [3,4,5]
-     * ```
      */
     dropWhile(p: (x: T) => boolean): AsyncSeq<T> {
         return new AsyncSeq(new DropWhileAsyncIterable(p, this.xs))
@@ -340,8 +333,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @nosideeffects
      * @param {T} sep Value to intersperse.
-     * @returns {AsyncSeq<T>} Sequence with `sep` interspersed between all the
-     *                   elements of the input sequence.
+     * @returns {AsyncSeq<T>}
+     *   Sequence with `sep` interspersed between all the elements of the input
+     *   sequence.
      */
     intersperse(sep: T): AsyncSeq<T> {
         return new AsyncSeq(new IntersperseAsyncIterable(this.xs, sep))
@@ -352,8 +346,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * sequence.
      *
      * @nosideeffects
-     * @param {Iterable<T>} sep Separate each element of the input sequency by
-     *                          a given separating `Iterable`.
+     * @param {Iterable<T>} sep
+     *   Separate each element of the input sequency by a given separating
+     *   `Iterable`.
      */
     intercalate(sep: Iterable<T>): AsyncSeq<T> {
         return new AsyncSeq(new IntercalateAsyncIterable(this.xs, sep))
@@ -363,10 +358,10 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * Joins (flattens) a nested sequence.
      *
      * @nosideeffects
-     * @this {AsyncSeq<Iterable<U> | AsyncIterable<U>>} Only a sequence of
-     *                                                  iterables can be joined.
-     * @returns {AsyncSeq<U>} The result of concatenating all the nested
-     *                        sequences.
+     * @this {AsyncSeq<Iterable<U> | AsyncIterable<U>>}
+     *   Only a sequence of iterables can be joined.
+     * @returns {AsyncSeq<U>}
+     *   The result of concatenating all the nested sequences.
      * @template U
      */
     join<U>(this: AsyncSeq<Iterable<U> | AsyncIterable<U>>): AsyncSeq<U> {
@@ -382,8 +377,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @nosideeffects
      * @param {(x: T) => U} f Function that will be mapped.
-     * @returns {AsyncSeq<U>} A sequence that represents having applied `f` to
-     *                        each element in the input sequence.
+     * @returns {AsyncSeq<U>}
+     *   A sequence that represents having applied `f` to each element in the
+     *   input sequence.
      * @template U
      */
     map<U>(f: (x: T) => U): AsyncSeq<U> {
@@ -396,10 +392,10 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * This is a specialized fold where the elements are multiplied together.
      * Naturally, the entire sequence is evaluated as a result.
      *
-     * @this {AsyncSeq<number>} To calculate the product, the sequence must
-     *                          contain numbers.
-     * @returns {Promise<number>} The result of multiplying all the numbers in
-     *                            the sequence together.
+     * @this {AsyncSeq<number>}
+     *   To calculate the product, the sequence must contain numbers.
+     * @returns {Promise<number>}
+     *   The result of multiplying all the numbers in the sequence together.
      */
     product(this: AsyncSeq<number>): Promise<number> {
         return this.reduce((p, x) => p * x, 1)
@@ -412,8 +408,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @param {(accum: U, x: T) => U} f Reducing function.
      * @param {U} init Initial value.
-     * @returns {Promise<U>} The result of combining all the elements using `f`,
-     *                       starting with `init` as `accum`.
+     * @returns {Promise<U>}
+     *   The result of combining all the elements using `f`, starting with
+     *   `init` as `accum`.
      * @template U
      */
     async reduce<U>(f: (accum: U, x: T) => U, init: U): Promise<U> {
@@ -432,19 +429,15 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @nosideeffects
      * @param {number} n The index to split at.
-     * @returns {[AsyncSeq<T>, AsyncSeq<T>]} The first element in the pair is
-     *                                       the first `n` elements of the
-     *                                       input, the second is all the
-     *                                       elements starting at and following
-     *                                       the index `n`.
+     * @returns {[AsyncSeq<T>, AsyncSeq<T>]}
+     *   The first element in the pair is the first `n` elements of the input,
+     *   the second is all the elements starting at and following the index `n`.
      * @example
-     * ```ts
      * await Promise.all(AsyncSeq
      *   .fromIterable([1,2,3,4,5])
      *   .splitAt(3)
      *   .map(s => s.collect()))
      *   === [[1,2,3],[4,5]]
-     * ```
      */
     splitAt(n: number): [AsyncSeq<T>, AsyncSeq<T>] {
         return n <= 0
@@ -483,8 +476,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * false, the output sequence will stop.
      *
      * @nosideeffects
-     * @param {(x: T) => boolean} p Predicate to check whether to keep taking
-     *                              elements or not.
+     * @param {(x: T) => boolean} p
+     *   Predicate to check whether to keep taking elements or not.
      * @returns {AsyncSeq<T>} The resulting sequence.
      */
     takeWhile(p: (x: T) => boolean): AsyncSeq<T> {
@@ -499,8 +492,9 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *
      * @nosideeffects
      * @param {AsyncIterable<U> | Iterable<U>} it Iterable to zip with.
-     * @returns {AsyncSeq<[T,U]>} A sequence that will iterate over both the
-     *                            input collections, yielding pairs of values.
+     * @returns {AsyncSeq<[T,U]>}
+     *   A sequence that will iterate over both the input collections, yielding
+     *   pairs of values.
      * @template U
      */
     zip<U>(it: AsyncIterable<U> | Iterable<U>): AsyncSeq<[T, U]> {
