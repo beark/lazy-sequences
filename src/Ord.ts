@@ -12,7 +12,8 @@ export type NaturallyOrderable =
     | boolean
     | ArrayOfNaturallyOrderable
 
-export interface ArrayOfNaturallyOrderable extends Array<NaturallyOrderable> {}
+export interface ArrayOfNaturallyOrderable
+    extends ReadonlyArray<NaturallyOrderable> {}
 
 /**
  * A comparator for a type `T`.
