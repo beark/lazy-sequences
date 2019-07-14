@@ -16,7 +16,7 @@ import { ZipIterable, ZipWithIterable } from "./Zip"
 /**
  * An iterable sequence of values of type `T`.
  *
- * @implements Iterable<T>
+ * @implements {Iterable<T>}
  * @template T
  */
 export class Seq<T> implements Iterable<T> {
@@ -42,14 +42,13 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {Iterable<T>} it Iterable of elements to cycle.
-     * @returns {Seq<T>} A sequence that goes through every element of `it`,
-     *                   and then starts over in an infinite cycle.
+     * @returns {Seq<T>}
+     *   A sequence that goes through every element of `it`, and then starts
+     *   over in an infinite cycle.
      * @template T
      * @example
-     * ```ts
      * Seq.cycle([1,2]).take(5).collect()
      *   === [1,2,1,2,1]
-     * ```
      */
     static cycle<T>(it: Iterable<T>): Seq<T> {
         return new Seq(new CycleIterable(it))
@@ -73,13 +72,12 @@ export class Seq<T> implements Iterable<T> {
      * @nosideeffects
      * @param {number} from First number in the sequence.
      * @param {number} step How far to step each iteration. Defaults to `1`.
-     * @returns {Seq<number>} An infinite sequence starting at `from`, changing
-     *                        by `step` each step of iteration.
+     * @returns {Seq<number>}
+     *   An infinite sequence starting at `from`, changing by `step` each step
+     *   of iteration.
      * @example
-     * ```ts
      * Seq.enumFrom(0).take(5).collect()
      *   === [0,1,2,3,4]
-     * ```
      */
     static enumFrom(from: number, step: number = 1): Seq<number> {
         return new Seq(new EnumFromIterable(from, step))
@@ -109,13 +107,10 @@ export class Seq<T> implements Iterable<T> {
      * @returns {Seq<T>} Sequence over all the elements `g` can generate.
      * @template T
      * @example
-     * ```ts
-     * Seq
-     *   .fromIndexedGenerator(
+     * Seq.fromIndexedGenerator(
      *     i => i > 3 ? undefined : i
-     *   ).collect()
+     * ).collect()
      *   === [0, 1, 2]
-     * ```
      */
     static fromIndexedGenerator<T>(g: (i: number) => T | undefined): Seq<T> {
         return Seq.enumFrom(0)
@@ -151,14 +146,12 @@ export class Seq<T> implements Iterable<T> {
      * @nosideeffects
      * @param {(x: T) => T} f Function to apply to generate new values.
      * @param {T} x Initial value.
-     * @returns {Seq<T>} The sequence of applying `f` infinitely recursively on
-     *                   `x`.
+     * @returns {Seq<T>}
+     *   The sequence of applying `f` infinitely recursively on `x`.
      * @template T
      * @example
-     * ```ts
      * Seq.iterate(f, x).take(3).collect()
      *   === [x, f(x), f(f(x))]
-     * ```
      */
     static iterate<T>(f: (x: T) => T, x: T): Seq<T> {
         return new Seq(new IterateIterable(f, x))
@@ -172,10 +165,8 @@ export class Seq<T> implements Iterable<T> {
      * @returns {Seq<T>} An infinite sequence of `x`.
      * @template T
      * @example
-     * ```ts
      * Seq.repeat(1).take(3).collect()
      *   === [1, 1, 1]
-     * ```
      */
     static repeat<T>(x: T): Seq<T> {
         return Seq.fromIndexedGenerator(_ => x)
@@ -191,10 +182,8 @@ export class Seq<T> implements Iterable<T> {
      * @returns {Seq<T>} A sequence with `n` repetitions of `x`.
      * @template T
      * @example
-     * ```ts
      * Seq.replicate(3, 0).collect()
      *   === [0, 0, 0]
-     * ```
      */
     static replicate<T>(n: number, x: T): Seq<T> {
         return Seq.repeat(x).take(n)
@@ -208,10 +197,8 @@ export class Seq<T> implements Iterable<T> {
      * @returns {Seq<T>} A sequence containing only the given value `x`.
      * @template T
      * @example
-     * ```ts
      * Seq.singleton(1).collect()
      *   === [1]
-     * ```
      */
     static singleton<T>(x: T): Seq<T> {
         return new Seq([x])
@@ -221,8 +208,9 @@ export class Seq<T> implements Iterable<T> {
      * Constructs a sequence from any `Iterable`.
      *
      * @nosideffects
-     * @param {Iterable<T>} xs The root iterable that will serve as source of
-     *                         the elements in the sequence.
+     * @param {Iterable<T>} xs
+     *   The root iterable that will serve as source of the elements in the
+     *   sequence.
      * @returns {Seq<T>}
      */
     constructor(private xs: Iterable<T>) {}
@@ -241,12 +229,10 @@ export class Seq<T> implements Iterable<T> {
      * @param {(x: T) => boolean} p Predicate that must be satified.
      * @returns {boolean} True if every element in the sequence satisfied `p`.
      * @example
-     * ```ts
      * const s = new Seq([1,2,3]);
      *
      * s.all(x => x > 0) === true
      * s.all(x => x < 3) === false
-     * ```
      */
     all(p: (x: T) => boolean): boolean {
         for (const x of this.xs) {
@@ -268,12 +254,10 @@ export class Seq<T> implements Iterable<T> {
      * @param {(x: T) => boolean} p The predicate to check.
      * @returns {boolean} True if there was at least one element satisfying `p`.
      * @example
-     * ```ts
      * const s = new Seq([1,2,3]);
      *
      * s.any(x => x > 2) === true
      * s.any(x => x > 3) === false
-     * ```
      */
     any(p: (x: T) => boolean): boolean {
         for (const x of this.xs) {
@@ -290,18 +274,15 @@ export class Seq<T> implements Iterable<T> {
      *
      * This obviously evaluates the entire sequence.
      *
-     * @param {boolean} alwaysCopy If true, the returned array is always a copy,
-     *                             never a reference to some internal (eg,
-     *                             memoized) array. If false, `collect` will
-     *                             attempt to avoid copies when possible.
-     *                             Default is `true`.
+     * @param {boolean=} alwaysCopy
+     *   If true, the returned array is always a copy, never a reference to some
+     *   internal (eg, memoized) array. If false, `collect` will attempt to
+     *   avoid copies when possible. Default is `true`.
      * @returns {T[]} Concrete array with all the values in the sequence.
      * @example
-     * ```ts
      * const xs = Seq.replicate(3, 0).collect();
      *
      * xs === [0, 0, 0]
-     * ```
      */
     collect(alwaysCopy: boolean = true): T[] {
         if (this.xs instanceof Array) {
@@ -318,17 +299,15 @@ export class Seq<T> implements Iterable<T> {
      *
      * This method evaluates the entire sequence.
      *
-     * @param {Seq<string>} this The `this` of the `Seq` must have strings for
-     *                           elements.
-     * @returns {string} The result of concatenating all of the elements of the
-     *                   sequence.
+     * @param {Seq<string>} this
+     *   The `this` of the `Seq` must have strings for elements.
+     * @returns {string}
+     *   The result of concatenating all of the elements of the sequence.
      * @example
-     * ```ts
      * const xs = new Seq(['a', 'b', 'c']);
      *
      * xs.collectString()
      *   === 'abc'
-     * ```
      */
     collectString(this: Seq<string>): string {
         return "".concat(...this.xs)
@@ -339,16 +318,15 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {Iterable<T>} xs Collection to append to the input sequence.
-     * @returns {Seq<T>} Single sequence that will iterate over both the input
-     *                   sequence and the range represented by `xs`.
+     * @returns {Seq<T>}
+     *   Single sequence that will iterate over both the input sequence and the
+     *   range represented by `xs`.
      * @example
-     * ```ts
      * const xs = new Seq([1, 2]);
      * const ys = new Seq([3, 4]);
      *
      * xs.concat(ys).collect()
      *   === [1, 2, 3, 4]
-     * ```
      */
     concat(xs: Iterable<T>): Seq<T> {
         return new Seq(new ConcatIterable(this.xs, xs))
@@ -364,9 +342,9 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {(x: T) => Iterable<U>} f Function that will be mapped.
-     * @returns {Seq<U>} A sequence that represents having applied `f` to each
-     *                   element in the input sequence and then concatenated all
-     *                   the results.
+     * @returns {Seq<U>}
+     *   A sequence that represents having applied `f` to each element in the
+     *   input sequence and then concatenated all the results.
      * @template U
      */
     concatMap<U>(f: (x: T) => Iterable<U>): Seq<U> {
@@ -398,8 +376,8 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {number} n The number of elements to drop.
-     * @returns {Seq<T>} The same sequence as the input, except without the
-     *                   first `n` elements
+     * @returns {Seq<T>}
+     *   The same sequence as the input, except without the first `n` elements
      */
     drop(n: number): Seq<T> {
         return new Seq(new DropIterable(n, this.xs))
@@ -409,10 +387,11 @@ export class Seq<T> implements Iterable<T> {
      * Drops elements for as long as a given predicate is satisfied by them.
      *
      * @nosideeffects
-     * @param {(x: T) => boolean} p Predicate that determines whether to keep
-     *                              dropping or not.
-     * @returns {Seq<T>} The same sequence as the input, except without the
-     *                   elements for which `p` returned true.
+     * @param {(x: T) => boolean} p
+     *   Predicate that determines whether to keep dropping or not.
+     * @returns {Seq<T>}
+     *   The same sequence as the input, except without the elements for which
+     *   `p` returned true.
      */
     dropWhile(p: (x: T) => boolean): Seq<T> {
         return new Seq(new DropWhileIterable(p, this.xs))
@@ -449,8 +428,9 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {T} sep Value to intersperse.
-     * @returns {Seq<T>} Sequence with `sep` interspersed between all the
-     *                   elements of the input sequence.
+     * @returns {Seq<T>}
+     *   Sequence with `sep` interspersed between all the elements of the input
+     *   sequence.
      */
     intersperse(sep: T): Seq<T> {
         return new Seq(new IntersperseIterable(this.xs, sep))
@@ -461,8 +441,9 @@ export class Seq<T> implements Iterable<T> {
      * sequence.
      *
      * @nosideeffects
-     * @param {Iterable<T>} sep Separate each element of the input sequency by
-     *                          a given separating `Iterable`.
+     * @param {Iterable<T>} sep
+     *   Separate each element of the input sequency by a given separating
+     *   `Iterable`.
      */
     intercalate(sep: Iterable<T>): Seq<T> {
         return new Seq(new IntercalateIterable(this.xs, sep))
@@ -490,8 +471,9 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {(x: T) => U} f Function that will be mapped.
-     * @returns {Seq<U>} A sequence that represents having applied `f` to each
-     *                   element in the input sequence.
+     * @returns {Seq<U>}
+     *   A sequence that represents having applied `f` to each element in the
+     *   input sequence.
      * @template U
      */
     map<U>(f: (x: T) => U): Seq<U> {
@@ -524,10 +506,10 @@ export class Seq<T> implements Iterable<T> {
      * This is a specialized fold where the elements are multiplied together.
      * Naturally, the entire sequence is evaluated as a result.
      *
-     * @this {Seq<number>} To calculate the product, the sequence must contain
-     *                     numbers.
-     * @returns {number} The result of multiplying all the numbers in the
-     *                   sequence together.
+     * @this {Seq<number>}
+     *   To calculate the product, the sequence must contain numbers.
+     * @returns {number}
+     *   The result of multiplying all the numbers in the sequence together.
      */
     product(this: Seq<number>): number {
         return this.reduce((p, x) => p * x, 1)
@@ -540,8 +522,9 @@ export class Seq<T> implements Iterable<T> {
      *
      * @param {(accum: U, x: T) => U} f Reducing function.
      * @param {U} init Initial value.
-     * @returns {U} The result of reducing all the values in the sequence using
-     *              `f`, starting with `init` as `accum`.
+     * @returns {U}
+     *   The result of reducing all the values in the sequence using `f`,
+     *   starting with `init` as `accum`.
      * @template U
      */
     reduce<U>(f: (accum: U, x: T) => U, init: U): U {
@@ -569,11 +552,10 @@ export class Seq<T> implements Iterable<T> {
      *
      * Note that sorting a sequence forces an evaluation of it.
      *
-     * @this {Seq<U extends NaturallyOrderable>} Only sequences of naturally
-     *                                           comparable elements may be
-     *                                           sorted.
-     * @returns {Seq<U>} A sorted sequence containing all the elements of the
-     *                   original sequence.
+     * @this {Seq<U extends NaturallyOrderable>}
+     *   Only sequences of naturally comparable elements may be sorted.
+     * @returns {Seq<U>}
+     *   A sorted sequence containing all the elements of the original sequence.
      * @template U
      */
     sort<U extends NaturallyOrderable>(this: Seq<U>): Seq<U> {
@@ -586,12 +568,12 @@ export class Seq<T> implements Iterable<T> {
      *
      * Note that sorting a sequence forces an evaluation of it.
      *
-     * @param {keyof T} key Any property key of `T` where the property extends
-     *                      `NaturallyOrderable`.
-     * @returns {Seq<T>} A sequence sorted according to the natural order of the
-     *                   property `key`.
+     * @param {keyof T} key
+     *   Any property key of `T` where the property extends
+     *   `NaturallyOrderable`.
+     * @returns {Seq<T>}
+     *   A sequence sorted according to the natural order of the property `key`.
      * @example
-     * ```ts
      * const a = { x: 1, y: 0 };
      * const b = { x: 0, y: 1 };
      *
@@ -602,7 +584,6 @@ export class Seq<T> implements Iterable<T> {
      *
      * xs.sortOn('y').collect()
      *   === [b, a]
-     * ```
      */
     sortOn(key: ComparableKeys<T>): Seq<T> {
         return new Seq(this.collect().sort(compareOn<T>(key)))
@@ -615,8 +596,8 @@ export class Seq<T> implements Iterable<T> {
      *
      * Note that sorting a sequence forces an evaluation of it.
      *
-     * @param {(a: T, b: T) => number} compareFn The comparison function to use
-     *                                           when ordering the elements.
+     * @param {(a: T, b: T) => number} compareFn
+     *   The comparison function to use when ordering the elements.
      * @returns {Seq<T>} A sorted sequence.
      */
     sortBy(compareFn: (a: T, b: T) => number): Seq<T> {
@@ -635,13 +616,11 @@ export class Seq<T> implements Iterable<T> {
      *   The first element in the pair is the first `n` elements of the input,
      *   the second is all the elements starting at and following the index `n`.
      * @example
-     * ```ts
      * Seq
      *   .fromArray([1,2,3,4,5])
      *   .splitAt(3)
      *   .map(s => s.collect())
      *   === [[1,2,3],[4,5]]
-     * ```
      */
     splitAt(n: number): [Seq<T>, Seq<T>] {
         return n <= 0 ? [Seq.empty(), this] : [this.take(n), this.drop(n)]
@@ -675,8 +654,8 @@ export class Seq<T> implements Iterable<T> {
      * holds true. As soon as the input sequence ends or the predicate returns
      * false, the output sequence will stop.
      *
-     * @param {(x: T) => boolean} p Predicate to check whether to keep taking
-     *                              elements or not.
+     * @param {(x: T) => boolean} p
+     *   Predicate to check whether to keep taking elements or not.
      * @returns {Seq<T>} The resulting sequence.
      */
     takeWhile(p: (x: T) => boolean): Seq<T> {
@@ -703,8 +682,9 @@ export class Seq<T> implements Iterable<T> {
      *
      * @nosideeffects
      * @param {Iterable<U>} it Iterable to zip with.
-     * @returns {Seq<[T,U]>} A sequence that will iterate over both the input
-     *                       collections, yielding pairs of values.
+     * @returns {Seq<[T,U]>}
+     *   A sequence that will iterate over both the input collections, yielding
+     *   pairs of values.
      * @template U
      */
     zip<U>(it: Iterable<U>): Seq<[T, U]> {

@@ -35,7 +35,7 @@ import { ZipAsyncIterable, ZipWithAsyncIterable } from "./Zip"
  * import { AsyncSeq } from 'seq/Async';
  * ```
  *
- * @implements AsyncIterable<T>
+ * @implements {AsyncIterable<T>}
  * @template T
  */
 export class AsyncSeq<T> implements AsyncIterable<T> {
