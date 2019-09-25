@@ -22,17 +22,18 @@
     "homepage": "https://github.com/beark/lazy-sequences",
     "bugs": "https://github.com/beark/lazy-sequences/issues",
     "scripts": {
-        "build": "./node_modules/.bin/tsc --project tsconfig.json",
+        "build": "./node_modules/.bin/tsc --project tsconfig.json && ./node_modules/.bin/eslint ./",
         "test": "jest",
         "tsc": "./node_modules/.bin/tsc"
     },
     "devDependencies": {
-        "@types/jest": "^24.0.15",
-        "jest": "^24.8.0",
-        "ts-jest": "^24.0.2",
-        "tslint": "^5.18.0",
-        "tslint-config-prettier": "^1.18.0",
-        "typescript": "^3.5.3"
+        "@types/jest": "24.0.18",
+        "@typescript-eslint/eslint-plugin": "2.3.1",
+        "@typescript-eslint/parser": "2.3.1",
+        "eslint": "6.4.0",
+        "jest": "24.9.0",
+        "ts-jest": "24.1.0",
+        "typescript": "3.6.3"
     },
     "jest": {
         "preset": "ts-jest",

@@ -1,6 +1,5 @@
 if (typeof (Symbol as any).asyncIterator === "undefined") {
     ;(Symbol as any).asyncIterator =
-        // @ts-ignore
         Symbol.asyncIterator || Symbol("asyncIterator")
 }
 
