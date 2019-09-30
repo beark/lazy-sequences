@@ -83,7 +83,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * @returns {AsyncSeq<T>} Sequence of all the values contained in `xs`
      * @template T
      */
-    static fromIterable<T>(xs: Iterable<T | Promise<T>>): AsyncSeq<T> {
+    static from<T>(xs: Iterable<T | Promise<T>>): AsyncSeq<T> {
         return new AsyncSeq(new AsyncFromIterable(xs))
     }
 
@@ -116,7 +116,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * @template T
      */
     static singleton<T>(x: Promise<T>): AsyncSeq<T> {
-        return AsyncSeq.fromIterable([x])
+        return AsyncSeq.from([x])
     }
 
     /**
@@ -442,7 +442,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      */
     splitAt(n: number): [AsyncSeq<T>, AsyncSeq<T>] {
         return n <= 0
-            ? [AsyncSeq.fromIterable([] as T[]), this]
+            ? [AsyncSeq.from([] as T[]), this]
             : [this.take(n), this.drop(n)]
     }
 

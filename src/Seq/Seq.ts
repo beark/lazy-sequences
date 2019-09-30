@@ -1,4 +1,3 @@
-import { ComparableKeys, compare, compareOn, NaturallyOrderable } from "../Ord"
 import { EnumFromIterable, RangeIterable } from "../Range"
 import { IndexedValue } from "../utils"
 import { ConcatIterable } from "./Concat"
@@ -82,18 +81,6 @@ export class Seq<T> implements Iterable<T> {
      */
     static enumFrom(from: number, step: number = 1): Seq<number> {
         return new Seq(new EnumFromIterable(from, step))
-    }
-
-    /**
-     * Construct a sequence from an array.
-     *
-     * @nosideeffects
-     * @param {T[]} xs Array to construct from.
-     * @returns {Seq<T>} Sequence of all the values contained in `xs`
-     * @template T
-     */
-    static fromArray<T>(xs: T[]): Seq<T> {
-        return new Seq(xs)
     }
 
     /**
@@ -286,7 +273,7 @@ export class Seq<T> implements Iterable<T> {
      * xs === [0, 0, 0]
      */
     collect(alwaysCopy: boolean = true): T[] {
-        if (this.xs instanceof Array) {
+        if (Array.isArray(this.xs)) {
             return alwaysCopy ? this.xs.slice() : this.xs
         } else if (isMemoizingIterable(this.xs)) {
             return alwaysCopy ? this.xs.toArray().slice() : this.xs.toArray()
@@ -537,72 +524,24 @@ export class Seq<T> implements Iterable<T> {
     }
 
     /**
-     * Creates a reversed sequence from the input sequence.
+     * Right fold over all the values in the sequence.
      *
-     * Note that reverse by necessity has to evaluate the entire length of the
-     * input sequence before being able to yield any elements.
+     * By necessity, this will evaluate the entire input sequence.
      *
-     * @returns {Seq<T>} The reversed sequence.
-     */
-    reverse(): Seq<T> {
-        return new Seq(this.collect().reverse())
-    }
-
-    /**
-     * Sorts the sequence according to the natural order of its element type.
-     *
-     * Note that sorting a sequence forces an evaluation of it.
-     *
-     * @this {Seq<U extends NaturallyOrderable>}
-     *   Only sequences of naturally comparable elements may be sorted.
-     * @returns {Seq<U>}
-     *   A sorted sequence containing all the elements of the original sequence.
+     * @param {(x: T, accum: U) => U} f Reducing function.
+     * @param {U} init Initial value.
+     * @returns {U}
+     *   The result of reducing all the values in the sequence using `f`, with
+     *   `init` being the last value passed to it.
      * @template U
      */
-    sort<U extends NaturallyOrderable>(this: Seq<U>): Seq<U> {
-        return new Seq(this.collect().sort(compare))
-    }
+    reduceRight<U>(f: (x: T, accum: U) => U, init: U): U {
+        const [x, xs] = this.unCons()
+        if (x) {
+            return f(x, xs.reduceRight(f, init))
+        }
 
-    /**
-     * Sorts the sequence on some property of its element type that is naturally
-     * comparable.
-     *
-     * Note that sorting a sequence forces an evaluation of it.
-     *
-     * @param {keyof T} key
-     *   Any property key of `T` where the property extends
-     *   `NaturallyOrderable`.
-     * @returns {Seq<T>}
-     *   A sequence sorted according to the natural order of the property `key`.
-     * @example
-     * const a = { x: 1, y: 0 };
-     * const b = { x: 0, y: 1 };
-     *
-     * const xs = new Seq([a, b]);
-     *
-     * xs.sortOn('x').collect()
-     *   === [a, b]
-     *
-     * xs.sortOn('y').collect()
-     *   === [b, a]
-     */
-    sortOn(key: ComparableKeys<T>): Seq<T> {
-        return new Seq(this.collect().sort(compareOn<T>(key)))
-    }
-
-    /**
-     * Sort the sequence by some comparison function that defines a partial
-     * ordering of `T`s. Often, the comparison operation might be a
-     * {@link Comparator<T>}.
-     *
-     * Note that sorting a sequence forces an evaluation of it.
-     *
-     * @param {(a: T, b: T) => number} compareFn
-     *   The comparison function to use when ordering the elements.
-     * @returns {Seq<T>} A sorted sequence.
-     */
-    sortBy(compareFn: (a: T, b: T) => number): Seq<T> {
-        return new Seq(this.collect().sort(compareFn))
+        return init
     }
 
     /**
@@ -630,7 +569,9 @@ export class Seq<T> implements Iterable<T> {
     /**
      * Sums all numbers in the sequence.
      *
-     * @nosideeffects
+     * This is effectively a specialized fold of the sequence, and as such it
+     * will trigger its complete evaluation
+     *
      * @returns {number} The sum of all numbers in the sequence.
      */
     sum(this: Seq<number>): number {

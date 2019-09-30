@@ -8,9 +8,9 @@ import AsyncSeq from "./AsyncSeq"
 describe("AsyncSeq", () => {
     describe("all", () => {
         it("sanity", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4])
-            const ys = AsyncSeq.fromIterable([1, 2, 0, 4])
-            const zs = AsyncSeq.fromIterable([0, 2, 3, 4])
+            const xs = AsyncSeq.from([1, 2, 3, 4])
+            const ys = AsyncSeq.from([1, 2, 0, 4])
+            const zs = AsyncSeq.from([0, 2, 3, 4])
 
             expect(xs.all(x => x > 0)).resolves.toBe(true)
             expect(ys.all(x => x > 0)).resolves.toBe(false)
@@ -26,9 +26,9 @@ describe("AsyncSeq", () => {
 
     describe("any", () => {
         it("sanity", () => {
-            const xs = AsyncSeq.fromIterable([0, 0, 0, 4])
-            const ys = AsyncSeq.fromIterable([0, 2, 0, 0])
-            const zs = AsyncSeq.fromIterable([0, 0, 0, 0])
+            const xs = AsyncSeq.from([0, 0, 0, 4])
+            const ys = AsyncSeq.from([0, 2, 0, 0])
+            const zs = AsyncSeq.from([0, 0, 0, 0])
 
             expect(xs.any(x => x > 0)).resolves.toBe(true)
             expect(ys.any(x => x > 0)).resolves.toBe(true)
@@ -44,24 +44,28 @@ describe("AsyncSeq", () => {
 
     describe("collect", () => {
         it("sanity: roundtrips", () => {
-            expect(AsyncSeq.fromIterable([1, 2, 3]).collect()).resolves.toEqual(
-                [1, 2, 3],
-            )
-            expect(
-                AsyncSeq.fromIterable(["a", "b", "c"]).collect(),
-            ).resolves.toEqual(["a", "b", "c"])
+            expect(AsyncSeq.from([1, 2, 3]).collect()).resolves.toEqual([
+                1,
+                2,
+                3,
+            ])
+            expect(AsyncSeq.from(["a", "b", "c"]).collect()).resolves.toEqual([
+                "a",
+                "b",
+                "c",
+            ])
         })
     })
 
     it("sanity: finite generators create finite sequences", () => {
-        const xs = AsyncSeq.fromIterable([0, 1, 2])
+        const xs = AsyncSeq.from([0, 1, 2])
 
         expect(xs.collect()).resolves.toEqual([0, 1, 2])
     })
 
     describe("cons", () => {
         it("sanity: adds an element ot a sequence", () => {
-            const xs = AsyncSeq.fromIterable([0, 1, 2, 3])
+            const xs = AsyncSeq.from([0, 1, 2, 3])
             const ys = AsyncSeq.cons(10, xs).collect()
 
             expect(ys).resolves.toEqual([10, 0, 1, 2, 3])
@@ -70,10 +74,10 @@ describe("AsyncSeq", () => {
 
     describe("cycle", () => {
         it("repeats a sequence", () => {
-            const xs = AsyncSeq.cycle(AsyncSeq.fromIterable([1]))
+            const xs = AsyncSeq.cycle(AsyncSeq.from([1]))
                 .take(3)
                 .collect()
-            const ys = AsyncSeq.cycle(AsyncSeq.fromIterable([2, 3]))
+            const ys = AsyncSeq.cycle(AsyncSeq.from([2, 3]))
                 .take(5)
                 .collect()
 
@@ -84,21 +88,21 @@ describe("AsyncSeq", () => {
 
     describe("drop", () => {
         it("does nothing on an empty sequence", () => {
-            const xs = AsyncSeq.fromIterable([])
+            const xs = AsyncSeq.from([])
                 .drop(10)
                 .collect()
             expect(xs).resolves.toEqual([])
         })
 
         it("does nothing when dropping 0 elements", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const xs = AsyncSeq.from([1, 2, 3])
                 .drop(0)
                 .collect()
             expect(xs).resolves.toEqual([1, 2, 3])
         })
 
         it("drops n elements from a non-empty sequence", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5, 6])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5, 6])
                 .drop(3)
                 .collect()
             expect(xs).resolves.toEqual([4, 5, 6])
@@ -107,21 +111,21 @@ describe("AsyncSeq", () => {
 
     describe("dropWhile", () => {
         it("does nothing on an empty sequence", () => {
-            const xs = AsyncSeq.fromIterable([])
+            const xs = AsyncSeq.from([])
                 .dropWhile(constant(true))
                 .collect()
             expect(xs).resolves.toEqual([])
         })
 
         it("does nothing when dropping 0 elements", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const xs = AsyncSeq.from([1, 2, 3])
                 .dropWhile(constant(false))
                 .collect()
             expect(xs).resolves.toEqual([1, 2, 3])
         })
 
         it("drops elements from a non-empty sequence", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5, 6])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5, 6])
                 .dropWhile(x => x < 4)
                 .collect()
             expect(xs).resolves.toEqual([4, 5, 6])
@@ -140,7 +144,7 @@ describe("AsyncSeq", () => {
     describe("sum", () => {
         it("sanity", async () => {
             const xs = AsyncSeq.iterate(x => Promise.resolve(2 * x), 1).take(3)
-            const ys = AsyncSeq.fromIterable([1, 1, 1])
+            const ys = AsyncSeq.from([1, 1, 1])
             expect(await xs.sum()).toBe(7)
             expect(await ys.sum()).toBe(3)
         })
@@ -149,7 +153,7 @@ describe("AsyncSeq", () => {
     describe("product", () => {
         it("sanity", async () => {
             const xs = AsyncSeq.iterate(x => Promise.resolve(2 * x), 1).take(3)
-            const ys = AsyncSeq.fromIterable([1, 1, 1])
+            const ys = AsyncSeq.from([1, 1, 1])
             expect(await xs.product()).toBe(8)
             expect(await ys.product()).toBe(1)
         })
@@ -157,8 +161,8 @@ describe("AsyncSeq", () => {
 
     describe("concat laws", () => {
         it("satisfies associativity", async () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
-            const ys = AsyncSeq.fromIterable([4, 5, 6])
+            const xs = AsyncSeq.from([1, 2, 3])
+            const ys = AsyncSeq.from([4, 5, 6])
             const zs = [7, 8, 9]
 
             expect(
@@ -170,15 +174,15 @@ describe("AsyncSeq", () => {
         })
 
         it("satisfies left identity", async () => {
-            const empty = AsyncSeq.fromIterable<number>([])
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const empty = AsyncSeq.from<number>([])
+            const xs = AsyncSeq.from([1, 2, 3])
 
             expect(await empty.concat(xs).collect()).toEqual(await xs.collect())
         })
 
         it("satisfies right identity", async () => {
-            const empty = AsyncSeq.fromIterable<number>([])
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const empty = AsyncSeq.from<number>([])
+            const xs = AsyncSeq.from([1, 2, 3])
 
             expect(await xs.concat(empty).collect()).toEqual(await xs.collect())
         })
@@ -186,7 +190,7 @@ describe("AsyncSeq", () => {
 
     describe("map laws", () => {
         it("satisfies identity", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const xs = AsyncSeq.from([1, 2, 3])
                 .map(id)
                 .collect()
 
@@ -206,7 +210,7 @@ describe("AsyncSeq", () => {
 
         it("satisfies right identity", async () => {
             const xs = [1, 2, 3, 4]
-            const ys = await AsyncSeq.fromIterable(xs)
+            const ys = await AsyncSeq.from(xs)
                 .concatMap(x => [x])
                 .collect()
 
@@ -217,16 +221,14 @@ describe("AsyncSeq", () => {
             const f = (x: number) => descending(x).map(y => y.toString())
             const g = (s: string) => repeat(s, 2)
 
-            const xs = AsyncSeq.fromIterable([0, 1, 3, 5])
+            const xs = AsyncSeq.from([0, 1, 3, 5])
             expect(
                 xs
                     .concatMap(f)
                     .concatMap(g)
                     .collect(),
             ).toEqual(
-                xs
-                    .concatMap(x => AsyncSeq.fromIterable(f(x)).concatMap(g))
-                    .collect(),
+                xs.concatMap(x => AsyncSeq.from(f(x)).concatMap(g)).collect(),
             )
         })
     })
@@ -236,7 +238,7 @@ describe("AsyncSeq", () => {
             const xs = AsyncSeq.iterate(x => Promise.resolve(2 * x), 2)
                 .take(3)
                 .collect()
-            const ys = AsyncSeq.cycle(AsyncSeq.fromIterable([3, 4]))
+            const ys = AsyncSeq.cycle(AsyncSeq.from([3, 4]))
                 .take(2)
                 .collect()
 
@@ -245,7 +247,7 @@ describe("AsyncSeq", () => {
         })
 
         it("take(count) == id", () => {
-            const xs = AsyncSeq.fromIterable([3, 4, 5])
+            const xs = AsyncSeq.from([3, 4, 5])
                 .take(3)
                 .collect()
 
@@ -253,7 +255,7 @@ describe("AsyncSeq", () => {
         })
 
         it("take(0) == empty", () => {
-            const xs = AsyncSeq.fromIterable([4, 5, 6])
+            const xs = AsyncSeq.from([4, 5, 6])
                 .take(0)
                 .collect()
 
@@ -261,7 +263,7 @@ describe("AsyncSeq", () => {
         })
 
         it("take(n) => count == n, where n <= input count", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4]).take(3)
+            const xs = AsyncSeq.from([1, 2, 3, 4]).take(3)
 
             expect(xs.count()).resolves.toBe(3)
         })
@@ -269,7 +271,7 @@ describe("AsyncSeq", () => {
 
     describe("count", () => {
         it("sanity: works on Array input iterables", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4])
+            const xs = AsyncSeq.from([1, 2, 3, 4])
 
             expect(xs.count()).resolves.toBe(4)
         })
@@ -278,7 +280,7 @@ describe("AsyncSeq", () => {
     describe("splitAt", () => {
         it("sanity: works for doc example", async () => {
             const split = await Promise.all(
-                AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+                AsyncSeq.from([1, 2, 3, 4, 5])
                     .splitAt(3)
                     .map(s => s.collect()),
             )
@@ -288,7 +290,7 @@ describe("AsyncSeq", () => {
 
         it("sanity: n <= 0", async () => {
             const split = await Promise.all(
-                AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+                AsyncSeq.from([1, 2, 3, 4, 5])
                     .splitAt(0)
                     .map(s => s.collect()),
             )
@@ -298,7 +300,7 @@ describe("AsyncSeq", () => {
 
         it("sanity: empty sequence", async () => {
             const split = await Promise.all(
-                AsyncSeq.fromIterable([])
+                AsyncSeq.from([])
                     .splitAt(1)
                     .map(s => s.collect()),
             )
@@ -309,7 +311,7 @@ describe("AsyncSeq", () => {
 
     describe("takeWhile", () => {
         it("takeWhile(constant(false)) == empty", () => {
-            const xs = AsyncSeq.fromIterable([3, 4, 5])
+            const xs = AsyncSeq.from([3, 4, 5])
                 .takeWhile(constant(false))
                 .collect()
 
@@ -317,7 +319,7 @@ describe("AsyncSeq", () => {
         })
 
         it("xs.takeWhile(constant(true)) == xs", () => {
-            const xs = AsyncSeq.fromIterable([4, 5, 6])
+            const xs = AsyncSeq.from([4, 5, 6])
                 .takeWhile(constant(true))
                 .collect()
 
@@ -327,15 +329,15 @@ describe("AsyncSeq", () => {
 
     describe("zip", () => {
         it("sanity", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
-                .zip(AsyncSeq.fromIterable(["a", "b", "c"]))
+            const xs = AsyncSeq.from([1, 2, 3])
+                .zip(AsyncSeq.from(["a", "b", "c"]))
                 .collect()
 
             expect(xs).resolves.toEqual([[1, "a"], [2, "b"], [3, "c"]])
         })
 
         it("empty.zip(xs) == empty", () => {
-            const xs = AsyncSeq.fromIterable<number>([])
+            const xs = AsyncSeq.from<number>([])
                 .zip(["a", "b", "c"])
                 .collect()
 
@@ -343,7 +345,7 @@ describe("AsyncSeq", () => {
         })
 
         it("xs.zip(empty) == empty", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const xs = AsyncSeq.from([1, 2, 3])
                 .zip([])
                 .collect()
 
@@ -353,18 +355,15 @@ describe("AsyncSeq", () => {
 
     describe("zipWith", () => {
         it("sanity", async () => {
-            const xs = await AsyncSeq.fromIterable([1, 2, 3])
-                .zipWith(
-                    (a, b: number) => a + b,
-                    AsyncSeq.fromIterable([4, 5, 6, 7]),
-                )
+            const xs = await AsyncSeq.from([1, 2, 3])
+                .zipWith((a, b: number) => a + b, AsyncSeq.from([4, 5, 6, 7]))
                 .collect()
 
             expect(xs).toEqual([5, 7, 9])
         })
 
         it("empty.zipWith(f, xs) == empty", () => {
-            const xs = AsyncSeq.fromIterable<number>([])
+            const xs = AsyncSeq.from<number>([])
                 .zipWith((_, b) => b, ["a", "b", "c"])
                 .collect()
 
@@ -372,7 +371,7 @@ describe("AsyncSeq", () => {
         })
 
         it("xs.zipWith(f, empty) == empty", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3])
+            const xs = AsyncSeq.from([1, 2, 3])
                 .zipWith((a, _) => a, [])
                 .collect()
 
@@ -382,7 +381,7 @@ describe("AsyncSeq", () => {
 
     describe("filter", () => {
         it("filter(constant(true)) == id", async () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5])
 
             expect(await xs.filter(constant(true)).collect()).toEqual(
                 await xs.collect(),
@@ -390,20 +389,20 @@ describe("AsyncSeq", () => {
         })
 
         it("filter(constant(false)) == empty", async () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5])
 
             expect(await xs.filter(constant(false)).collect()).toEqual([])
         })
 
         it("sanity: even keeps even numbers", async () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5, 6])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5, 6])
             expect(await xs.filter(even).collect()).toEqual([2, 4, 6])
         })
     })
 
     describe("indexed", () => {
         it("xs.indexed().map(value) == id", async () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5])
 
             expect(
                 await xs
@@ -414,17 +413,17 @@ describe("AsyncSeq", () => {
         })
 
         it("xs.indexed().map(index) == fromRange(0,count-1)", async () => {
-            const xs = AsyncSeq.fromIterable(["a", "b", "c"]).indexed()
+            const xs = AsyncSeq.from(["a", "b", "c"]).indexed()
 
             expect(xs.map(x => x.index).collect()).toEqual(
-                AsyncSeq.fromIterable([0, 1, 2]).collect(),
+                AsyncSeq.from([0, 1, 2]).collect(),
             )
         })
     })
 
     describe("intersperse, intercalate", () => {
         it("sanity: intersperse", () => {
-            const str = AsyncSeq.fromIterable(["a", "b", "c", "d", "e", "f"])
+            const str = AsyncSeq.from(["a", "b", "c", "d", "e", "f"])
 
             expect(str.intersperse(",").collectString()).resolves.toEqual(
                 "a,b,c,d,e,f",
@@ -432,13 +431,13 @@ describe("AsyncSeq", () => {
         })
 
         it("sanity: intercalate", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3, 4, 5])
+            const xs = AsyncSeq.from([1, 2, 3, 4, 5])
             const expected = [1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5]
             expect(xs.intercalate([0, 0]).collect()).resolves.toEqual(expected)
         })
 
         it("intercalate([]) == id", () => {
-            const xs = AsyncSeq.fromIterable([1, 2, 3]).intercalate([])
+            const xs = AsyncSeq.from([1, 2, 3]).intercalate([])
             expect(xs.collect()).resolves.toEqual([1, 2, 3])
         })
     })

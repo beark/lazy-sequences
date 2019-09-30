@@ -6,7 +6,10 @@
     "main": "index.js",
     "types": "index.d.ts",
     "files": [
-        "./"
+        "*.js",
+        "*.d.ts",
+        "Seq/",
+        "Async/"
     ],
     "keywords": [
         "async",
