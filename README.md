@@ -67,9 +67,9 @@ const S = require('lazy-sequences').default;
 In addition to regular lazy sequences, `lazy-sequences` also provides _async_ lazy sequences. Just like `Seq`, in some sense, is a fluent/functional wrapper of `Iterable`s, `AsyncSeq` is kind of a wrapper of `AsyncIterable`. A quick example:
 
 ```ts
-import AsyncSeq from 'lazy-sequences/lib/Async';
+import AsyncSeq from 'lazy-sequences/Async';
 // Or in commonjs:
-// const { AsyncSeq } = require('lazy-sequences/lib/Async');
+// const { AsyncSeq } = require('lazy-sequences/Async');
 
 const seq = new AsyncSeq(someAsyncIterable);
 
@@ -94,7 +94,7 @@ if (
       || Symbol("asyncIterator");
 }
 
-import AsyncSeq from 'lazy-sequences/lib/Async';
+import AsyncSeq from 'lazy-sequences/Async';
 ```
 
 Or something like this in JS (assuming commonjs):
@@ -104,5 +104,5 @@ if (typeof Symbol.asyncIterator === "undefined") {
     Symbol.asyncIterator = Symbol.asyncIterator || Symbol("asyncIterator");
 }
 
-const { AsyncSeq } = require('lazy-sequences/lib/Async');
+const { AsyncSeq } = require('lazy-sequences/Async');
 ```

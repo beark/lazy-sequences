@@ -15,7 +15,7 @@ export class MemoizingIterable<T> implements Iterable<T> {
         }
     }
 
-    [Symbol.iterator](): Iterator<T> {
+    [Symbol.iterator](): Iterator<T, void, void> {
         return new MemoizingIterator(this)
     }
 
@@ -40,21 +40,23 @@ export class MemoizingIterable<T> implements Iterable<T> {
 
 type PartialEvalState<T> = {
     evaluationIndex: number
-    evaluationIter: Iterator<T>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    evaluationIter: Iterator<T, any, any>
 }
 
 /* @internal */
 export function isMemoizingIterable<T>(
     it: Iterable<T>,
 ): it is MemoizingIterable<T> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return "evaluatedData" in it && Array.isArray((it as any).evaluatedData)
 }
 
-class MemoizingIterator<T> implements Iterator<T> {
+class MemoizingIterator<T> implements Iterator<T, void, void> {
     index: number = 0
     constructor(private mem: MemoizingIterable<T>) {}
 
-    next(): IteratorResult<T> {
+    next(): IteratorResult<T, void> {
         if (this.mem.partialState !== undefined) {
             const state = this.mem.partialState
             if (this.index < state.evaluationIndex) {
@@ -84,7 +86,7 @@ class MemoizingIterator<T> implements Iterator<T> {
                 }
             }
 
-            return { done: true } as any
+            return { done: true, value: undefined }
         }
     }
 }

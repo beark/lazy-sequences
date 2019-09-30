@@ -71,5 +71,11 @@ module.exports = {
                 "@typescript-eslint/no-explicit-any": "off",
             },
         },
+        {
+            files: ["scripts/*"],
+            rules: {
+                "no-console": "off",
+            },
+        },
     ],
 }

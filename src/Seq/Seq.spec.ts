@@ -1,5 +1,5 @@
-import Seq from "./"
-import { comparing } from "./Ord"
+import Seq from ".."
+import { comparing } from "../Ord"
 
 describe("Seq", () => {
     describe("all", () => {

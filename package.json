@@ -1,12 +1,12 @@
 {
     "name": "lazy-sequences",
-    "version": "0.9.2",
+    "version": "0.10.0",
     "description": "Library of lazy sequences",
     "license": "MIT",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "index.js",
+    "types": "index.d.ts",
     "files": [
-        "lib/"
+        "./"
     ],
     "keywords": [
         "async",
@@ -22,9 +22,9 @@
     "homepage": "https://github.com/beark/lazy-sequences",
     "bugs": "https://github.com/beark/lazy-sequences/issues",
     "scripts": {
-        "build": "./node_modules/.bin/tsc --project tsconfig.json && ./node_modules/.bin/eslint ./",
-        "test": "jest",
-        "tsc": "./node_modules/.bin/tsc"
+        "prepackage": "./node_modules/.bin/tsc --project tsconfig.json && ./node_modules/.bin/eslint 'src/**'",
+        "package": "node scripts/prepare",
+        "test": "./node_modules/.bin/jest"
     },
     "devDependencies": {
         "@types/jest": "24.0.18",

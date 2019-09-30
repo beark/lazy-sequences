@@ -1,4 +1,5 @@
-import { enumFrom, IndexedValue } from "../Indexed"
+import { enumFrom } from "../Range"
+import { IndexedValue } from "../utils"
 import { ConcatAsyncIterable } from "./Concat"
 import { ConsAsyncIterable } from "./Cons"
 import { CycleAsyncIterable } from "./Cycle"

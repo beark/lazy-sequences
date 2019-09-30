@@ -1,12 +1,3 @@
-/**
- * A value of type `T` paired with an index of which position in a sequence it
- * occurs.
- */
-export type IndexedValue<T> = {
-    index: number
-    value: T
-}
-
 /* @internal */
 export class RangeIterable implements Iterable<number> {
     constructor(

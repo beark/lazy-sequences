@@ -42,6 +42,7 @@ class ZipAsyncIterator<T, U> implements AsyncIterator<[T, U]> {
         private ys: AsyncIterator<U> | Iterator<U>,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async next(value?: any): Promise<IteratorResult<[T, U]>> {
         const r1 = await this.xs.next(value)
         const r2 = await this.ys.next(value)
@@ -64,6 +65,7 @@ class ZipWithAsyncIterator<S, T, U> implements AsyncIterator<U> {
         private ys: Iterator<T> | AsyncIterator<T>,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async next(value?: any): Promise<IteratorResult<U>> {
         const r1 = await this.xs.next(value)
         const r2 = await this.ys.next(value)
@@ -74,6 +76,7 @@ class ZipWithAsyncIterator<S, T, U> implements AsyncIterator<U> {
                 value: this.f(r1.value, r2.value),
             }
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return { done: true } as any
         }
     }

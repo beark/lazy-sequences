@@ -115,6 +115,7 @@ export type ComparableKeys<T> = PickComparableKeys<T>[keyof T]
  * @template T
  */
 export function compareOn<T>(key: ComparableKeys<T>): Comparator<T> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return makeComparator((a: T, b: T) => compare((a as any)[key], b[key]))
 }
 
@@ -142,7 +143,5 @@ export function compare<T extends NaturallyOrderable>(a: T, b: T): number {
 }
 
 function desc<T>(cmp: (a: T, b: T) => number): Comparator<T> {
-    return makeComparator((a, b) => {
-        return cmp(b, a)
-    })
+    return makeComparator((a, b) => cmp(b, a))
 }

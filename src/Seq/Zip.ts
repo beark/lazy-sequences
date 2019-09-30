@@ -30,9 +30,9 @@ export class ZipWithIterable<S, T, U> implements Iterable<U> {
 class ZipIterator<T, U> implements Iterator<[T, U]> {
     constructor(private it1: Iterator<T>, private it2: Iterator<U>) {}
 
-    next(value?: any): IteratorResult<[T, U]> {
-        const r1 = this.it1.next(value)
-        const r2 = this.it2.next(value)
+    next(): IteratorResult<[T, U]> {
+        const r1 = this.it1.next()
+        const r2 = this.it2.next()
 
         if (!r1.done && !r2.done) {
             return {
@@ -40,7 +40,7 @@ class ZipIterator<T, U> implements Iterator<[T, U]> {
                 value: [r1.value, r2.value],
             }
         } else {
-            return { done: true } as any
+            return { done: true, value: undefined }
         }
     }
 }
@@ -52,9 +52,9 @@ class ZipWithIterator<S, T, U> implements Iterator<U> {
         private it2: Iterator<T>,
     ) {}
 
-    next(value?: any): IteratorResult<U> {
-        const r1 = this.it1.next(value)
-        const r2 = this.it2.next(value)
+    next(): IteratorResult<U> {
+        const r1 = this.it1.next()
+        const r2 = this.it2.next()
 
         if (!r1.done && !r2.done) {
             return {
@@ -62,7 +62,7 @@ class ZipWithIterator<S, T, U> implements Iterator<U> {
                 value: this.f(r1.value, r2.value),
             }
         } else {
-            return { done: true } as any
+            return { done: true, value: undefined }
         }
     }
 }
