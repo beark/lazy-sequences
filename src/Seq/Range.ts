@@ -1,3 +1,5 @@
+import { enumFrom } from "../common"
+
 /* @internal */
 export class RangeIterable implements Iterable<number> {
     constructor(
@@ -17,13 +19,6 @@ export class EnumFromIterable implements Iterable<number> {
 
     [Symbol.iterator]() {
         return enumFrom(this.start, this.step)
-    }
-}
-
-/* @internal */
-export function* enumFrom(start: number, step: number) {
-    for (let i = start; ; i += step) {
-        yield i
     }
 }
 

@@ -1,4 +1,4 @@
-import { isIterable } from "../utils"
+import { isIterable } from "../common"
 
 /* @internal */
 export class ConcatAsyncIterable<T> implements AsyncIterable<T> {

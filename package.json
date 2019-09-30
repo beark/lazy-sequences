@@ -9,7 +9,8 @@
         "*.js",
         "*.d.ts",
         "Seq/",
-        "Async/"
+        "Async/",
+        "common/"
     ],
     "keywords": [
         "async",
