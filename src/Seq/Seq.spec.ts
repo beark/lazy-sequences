@@ -389,6 +389,36 @@ describe("Seq", () => {
         })
     })
 
+    describe("reduce", () => {
+        it("should handle the empty sequence case gracefully", () => {
+            const xs = new Seq([])
+
+            expect(xs.reduce((x, p) => x + p, 0)).toBe(0)
+        })
+
+        it("should reduce left-associatively", () => {
+            const xs = new Seq([2, 2, 4])
+
+            const expected = xs.collect().reduce((p, x) => p / x, 32)
+            expect(xs.reduce((p, x) => p / x, 32)).toBe(expected)
+        })
+    })
+
+    describe("reduceRight", () => {
+        it("should handle the empty sequence case gracefully", () => {
+            const xs = new Seq([])
+
+            expect(xs.reduceRight((x, p) => x + p, 0)).toBe(0)
+        })
+
+        it("should reduce right-associatively", () => {
+            const xs = new Seq([32, 8, 4])
+
+            const expected = xs.collect().reduceRight((p, x) => x / p, 2)
+            expect(xs.reduceRight((x, p) => x / p, 2)).toBe(expected)
+        })
+    })
+
     describe("intersperse, intercalate", () => {
         it("sanity: intersperse", () => {
             const str = new Seq("abcdef")
