@@ -73,7 +73,7 @@ import AsyncSeq from 'lazy-sequences/Async';
 
 const seq = new AsyncSeq(someAsyncIterable);
 
-// resultPromise: Promise<string>
+// seq2: AsyncSeq<string>
 const seq2 = seq
     .map(x => x.foo())
     .map(foo => foo.toString());
