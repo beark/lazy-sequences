@@ -26,7 +26,8 @@
     "homepage": "https://github.com/beark/lazy-sequences",
     "bugs": "https://github.com/beark/lazy-sequences/issues",
     "scripts": {
-        "prepackage": "./node_modules/.bin/tsc --project tsconfig.json && ./node_modules/.bin/eslint 'src/**'",
+        "build": "./node_modules/.bin/tsc --project tsconfig.json",
+        "lint": "./node_modules/.bin/eslint 'src/**'",
         "package": "node scripts/prepare",
         "test": "./node_modules/.bin/jest"
     },
