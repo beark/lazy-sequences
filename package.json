@@ -1,6 +1,6 @@
 {
     "name": "lazy-sequences",
-    "version": "0.10.0",
+    "version": "1.0.0",
     "description": "Library of lazy sequences",
     "license": "MIT",
     "main": "index.js",
