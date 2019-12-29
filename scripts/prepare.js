@@ -1,12 +1,24 @@
 const fs = require("fs")
 const path = require("path")
+const { execSync } = require("child_process")
+const pkgConfig = require("../package.json")
 
 const packageContent = ["package.json", "README.md", "LICENSE"]
+
+console.log("Cleaning dist")
+deleteRecursively("dist")
+
+console.log("Building project")
+try {
+    execSync(pkgConfig.scripts.build, { stdio: "inherit" })
+} catch (e) {
+    process.exit(-1, e)
+}
 
 console.log("Deleting empty declarations")
 deleteEmpties("dist")
 
-console.log("Preparing package contents")
+console.log("Copying additional package contents")
 
 packageContent.forEach(file => {
     console.log(path.resolve(file))
@@ -27,4 +39,18 @@ function deleteEmpties(folder) {
             deleteEmpties(entry)
         }
     })
+}
+
+function deleteRecursively(folder) {
+    if (fs.existsSync(folder)) {
+        fs.readdirSync(folder).forEach(entry => {
+            entry = path.join(folder, entry)
+            if (fs.lstatSync(entry).isDirectory()) {
+                deleteRecursively(entry)
+            } else {
+                fs.unlinkSync(entry)
+            }
+        })
+        fs.rmdirSync(folder)
+    }
 }
