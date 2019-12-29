@@ -5,8 +5,8 @@
         "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
         "esModuleInterop": true /* Augment module interop to allow seamless require */,
         "lib": [
-            "dom",
-            "esnext"
+            "ES2015",
+            "ES2018.AsyncIterable"
         ] /* Specify library files to be included in the compilation. */,
         "allowJs": false /* Allow javascript files to be compiled. */,
         "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
