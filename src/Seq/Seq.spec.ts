@@ -52,11 +52,26 @@ describe("Seq", () => {
     })
 
     describe("cons", () => {
-        it("sanity: adds an element ot a sequence", () => {
+        it("sanity: adds an element to a sequence", () => {
             const xs = Seq.fromRange(0, 3)
             const ys = Seq.cons(10, xs).collect()
 
             expect(ys).toEqual([10, 0, 1, 2, 3])
+        })
+    })
+
+    describe("unCons", () => {
+        it("sanity: gets head + tail of simple sequences", () => {
+            const xs = new Seq([])
+            const ys = new Seq([0, 1, 2])
+
+            const [x, xxs] = xs.unCons()
+            expect(x).toBe(undefined)
+            expect([...xxs]).toEqual([])
+
+            const [y, yys] = ys.unCons()
+            expect(y).toBe(0)
+            expect([...yys]).toEqual([1, 2])
         })
     })
 
