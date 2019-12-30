@@ -1,9 +1,9 @@
 const fs = require("fs")
 const path = require("path")
-const { execSync } = require("child_process")
+const { execSync, spawnSync } = require("child_process")
 const pkgConfig = require("../package.json")
 
-const packageContent = ["package.json", "README.md", "LICENSE"]
+const packageContent = ["README.md", "LICENSE"]
 
 console.log("Cleaning dist")
 deleteRecursively("dist")
@@ -19,6 +19,25 @@ console.log("Deleting empty declarations")
 deleteEmpties("dist")
 
 console.log("Copying additional package contents")
+
+// Prepare a stripped package.json
+delete pkgConfig.scripts
+delete pkgConfig.devDependencies
+delete pkgConfig.jest
+console.log(path.resolve("package.json"))
+fs.writeFileSync(path.join("dist", "package.json"), JSON.stringify(pkgConfig))
+
+// Prettify it
+try {
+    const prettier = path.resolve(path.join("node_modules", ".bin", "prettier"))
+    spawnSync(
+        prettier,
+        ["--config", ".prettierrc", "dist/package.json", "--write"],
+        { stdio: "inherit" },
+    )
+} catch (e) {
+    process.exit(-1, e)
+}
 
 packageContent.forEach(file => {
     console.log(path.resolve(file))
