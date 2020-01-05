@@ -66,7 +66,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * @template T
      * @example
      * await AsyncSeq
-     *   .cycle(AsyncSeq.fromIterable([1,2]))
+     *   .cycle(AsyncSeq.from([1,2]))
      *   .take(5)
      *   .collect() === [1,2,1,2,1]
      */
@@ -210,7 +210,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *   The result of concatenating all of the elements of the sequence.
      * @example
      * await AsyncSeq
-     *   .fromIterable(["a", "b", "cd"])
+     *   .from(["a", "b", "cd"])
      *   .collectString()
      *   === "abcd"
      */
@@ -248,7 +248,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *   input sequence and then concatenated all the results.
      * @template U
      * @example
-     * await AsyncSeq.fromIterable([1,2,3])
+     * await AsyncSeq.from([1,2,3])
      *   .concatMap(x => [x*2, x*4])
      *   .collect()
      *   === [2, 4, 4, 8, 6, 12]
@@ -293,7 +293,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *   `p` returned true.
      * @example
      * await AsyncSeq
-     *   .fromIterable([1,2,3,4,5])
+     *   .from([1,2,3,4,5])
      *   .dropWhile(x => x < 3)
      *   .collect()
      *   === [3,4,5]
@@ -434,7 +434,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *   the second is all the elements starting at and following the index `n`.
      * @example
      * await Promise.all(AsyncSeq
-     *   .fromIterable([1,2,3,4,5])
+     *   .from([1,2,3,4,5])
      *   .splitAt(3)
      *   .map(s => s.collect()))
      *   === [[1,2,3],[4,5]]
