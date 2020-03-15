@@ -32,14 +32,14 @@
         "test": "./node_modules/.bin/jest"
     },
     "devDependencies": {
-        "@types/jest": "24.0.18",
-        "@typescript-eslint/eslint-plugin": "2.3.1",
-        "@typescript-eslint/parser": "2.3.1",
-        "eslint": "6.4.0",
-        "jest": "24.9.0",
+        "@types/jest": "25.1.4",
+        "@typescript-eslint/eslint-plugin": "2.23.0",
+        "@typescript-eslint/parser": "2.23.0",
+        "eslint": "6.8.0",
+        "jest": "25.1.0",
         "prettier": "1.19.1",
-        "ts-jest": "24.1.0",
-        "typescript": "3.6.3"
+        "ts-jest": "25.2.1",
+        "typescript": "3.8.3"
     },
     "jest": {
         "preset": "ts-jest",
