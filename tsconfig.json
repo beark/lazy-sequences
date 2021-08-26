@@ -14,6 +14,7 @@
         "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
         "newLine": "lf" /* Specify end of line character to be emitted. */,
         "stripInternal": true /* Strip declarations marked @internal */,
+        "importHelpers": true /* Import helpers instead of emitting them */,
 
         /* Strict Type-Checking Options */
         "strict": true /* Enable all strict type-checking options. */,
