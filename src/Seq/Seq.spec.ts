@@ -77,23 +77,22 @@ describe("Seq", () => {
 
     describe("cycle", () => {
         it("repeats a sequence", () => {
-            const xs = Seq.cycle([1])
-                .take(3)
-                .collect()
-            const ys = Seq.cycle([2, 3])
-                .take(5)
-                .collect()
+            const xs = Seq.cycle([1]).take(3).collect()
+            const ys = Seq.cycle([2, 3]).take(5).collect()
 
             expect(xs).toEqual([1, 1, 1])
             expect(ys).toEqual([2, 3, 2, 3, 2])
+        })
+
+        it("works with exotic iterables", () => {
+            const xs = Seq.cycle(Seq.fromRange(1, 3)).take(6).collect()
+            expect(xs).toEqual([1, 2, 3, 1, 2, 3])
         })
     })
 
     describe("drop", () => {
         it("does nothing on an empty sequence", () => {
-            const xs = Seq.empty()
-                .drop(10)
-                .collect()
+            const xs = Seq.empty().drop(10).collect()
             expect(xs).toEqual([])
         })
 
@@ -110,9 +109,7 @@ describe("Seq", () => {
 
     describe("dropWhile", () => {
         it("does nothing on an empty sequence", () => {
-            const xs = Seq.empty()
-                .dropWhile(constant(true))
-                .collect()
+            const xs = Seq.empty().dropWhile(constant(true)).collect()
             expect(xs).toEqual([])
         })
 
@@ -176,12 +173,9 @@ describe("Seq", () => {
             const ys = new Seq([4, 5, 6])
             const zs = new Seq([7, 8, 9])
 
-            expect(
-                xs
-                    .concat(ys)
-                    .concat(zs)
-                    .collect(),
-            ).toEqual(xs.concat(ys.concat(zs)).collect())
+            expect(xs.concat(ys).concat(zs).collect()).toEqual(
+                xs.concat(ys.concat(zs)).collect(),
+            )
         })
 
         it("satisfies left identity", () => {
@@ -210,9 +204,7 @@ describe("Seq", () => {
     describe("concatMap laws", () => {
         it("satisfies left identity", () => {
             const f = (x: number) => [x, 2 * x]
-            const xs = Seq.singleton(1)
-                .concatMap(f)
-                .collect()
+            const xs = Seq.singleton(1).concatMap(f).collect()
 
             expect(xs).toEqual(f(1))
         })
@@ -229,12 +221,9 @@ describe("Seq", () => {
             const g = (s: string) => repeat(s, 2)
 
             const xs = new Seq([0, 1, 3, 5])
-            expect(
-                xs
-                    .concatMap(f)
-                    .concatMap(g)
-                    .collect(),
-            ).toEqual(xs.concatMap(x => new Seq(f(x)).concatMap(g)).collect())
+            expect(xs.concatMap(f).concatMap(g).collect()).toEqual(
+                xs.concatMap(x => new Seq(f(x)).concatMap(g)).collect(),
+            )
         })
     })
 
@@ -242,7 +231,10 @@ describe("Seq", () => {
         it("sanity: works for doc example", () => {
             expect(
                 new Seq([1, 2, 3, 4, 5]).splitAt(3).map(s => s.collect()),
-            ).toEqual([[1, 2, 3], [4, 5]])
+            ).toEqual([
+                [1, 2, 3],
+                [4, 5],
+            ])
         })
 
         it("sanity: n <= 0", () => {
@@ -322,13 +314,15 @@ describe("Seq", () => {
         it("sanity", () => {
             const xs = new Seq([1, 2, 3]).zip(["a", "b", "c"]).collect()
 
-            expect(xs).toEqual([[1, "a"], [2, "b"], [3, "c"]])
+            expect(xs).toEqual([
+                [1, "a"],
+                [2, "b"],
+                [3, "c"],
+            ])
         })
 
         it("empty.zip(xs) == empty", () => {
-            const xs = Seq.empty()
-                .zip(["a", "b", "c"])
-                .collect()
+            const xs = Seq.empty().zip(["a", "b", "c"]).collect()
 
             expect(xs).toEqual([])
         })
@@ -555,7 +549,10 @@ const testIter = {
 }
 
 const id = <T>(x: T) => x
-const constant = <T>(x: T) => <U>(_: U) => x
+const constant =
+    <T>(x: T) =>
+    <U>(_: U) =>
+        x
 const repeat = <T>(x: T, n: number) => {
     const result: T[] = []
 
