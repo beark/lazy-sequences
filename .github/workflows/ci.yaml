@@ -25,7 +25,8 @@ jobs:
             - name: Install
               run: npm install
 
-            - name: Build and test
+            - name: Build, lint, and test
               run: |
                   npm run build
+                  npm run lint
                   npm test --coverage
