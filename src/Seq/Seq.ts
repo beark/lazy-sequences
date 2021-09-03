@@ -62,7 +62,7 @@ export class Seq<T> implements Iterable<T> {
      * @template T
      */
     static empty<T>(): Seq<T> {
-        return new Seq([] as T[])
+        return new Seq([])
     }
 
     /**
@@ -157,7 +157,7 @@ export class Seq<T> implements Iterable<T> {
      *   === [1, 1, 1]
      */
     static repeat<T>(x: T): Seq<T> {
-        return Seq.fromIndexedGenerator(_ => x)
+        return Seq.iterate(_ => x, x)
     }
 
     /**
@@ -349,7 +349,7 @@ export class Seq<T> implements Iterable<T> {
      * @returns {number} The number of elements the sequence contained.
      */
     count(): number {
-        if (this.xs instanceof Array) {
+        if (Array.isArray(this.xs)) {
             return this.xs.length
         } else if (isMemoizingIterable(this.xs)) {
             this.xs.realize()
