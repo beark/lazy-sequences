@@ -8,7 +8,13 @@ export class CycleIterable<T> implements Iterable<T> {
 }
 
 function* cycle<T>(xs: Iterable<T>) {
-    while (true) {
+    let cont = false
+    for (const x of xs) {
+        yield x
+        cont = true
+    }
+
+    while (cont) {
         for (const x of xs) {
             yield x
         }

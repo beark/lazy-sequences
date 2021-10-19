@@ -17,6 +17,10 @@ export class DropWhileIterable<T> implements Iterable<T> {
 }
 
 function* drop<T>(n: number, xs: Iterable<T>) {
+    if (n === Infinity) {
+        return
+    }
+
     for (const x of xs) {
         if (n > 0) {
             --n

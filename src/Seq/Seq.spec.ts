@@ -1,4 +1,71 @@
+import { Gen, Range } from "@propcheck/core"
+import * as G from "@propcheck/core/generators"
+import { given } from "@propcheck/jest"
 import Seq from ".."
+
+// Utility generator
+const posInt = G.nat.map(n => n + 1)
+
+// Infinite generators
+const enumeratedSeq = G.nat.andThen(n =>
+    G.nat.scale(s => Math.floor(s / 10)).map(m => Seq.enumFrom(n, m + 1)),
+)
+const iteratedSeq = G.nat.andThen(n =>
+    G.nat.map(m => Seq.iterate(x => n * x, m)),
+)
+const repeatedSeq = G.nat.map(n => Seq.repeat(n))
+const cycledSeq = G.arrayOf(G.nat).map(arr => Seq.cycle(arr))
+
+// Finite generators
+const indexedSeq = G.nat.map(n =>
+    Seq.fromIndexedGenerator(i => (i >= n ? undefined : i)),
+)
+const iterableSeq = G.arrayOf(G.nat).map(arr => new Seq(arr))
+const rangeSeq = G.nat
+    .map(to => to + 1)
+    .andThen(to =>
+        G.integral_(new Range(0, Math.max(0, to - 1), 0)).andThen(from =>
+            G.nat
+                .scale(s => Math.floor(s / 10))
+                .map(step => Seq.fromRange(from, to, 1 + step)),
+        ),
+    )
+const singletonSeq = G.nat.map(n => Seq.singleton(n))
+const replicatedSeq = G.nat.map(n => Seq.replicate(n, n))
+const emptySeq: Gen<Seq<unknown>> = G.oneOf_(
+    Gen.const(Seq.empty()),
+    Gen.const(Seq.fromIndexedGenerator(() => undefined)),
+    Gen.const(Seq.cycle([])),
+    Gen.const(Seq.enumFrom(0).take(0)),
+    Gen.const(Seq.enumFrom(0).drop(Infinity)),
+)
+
+const consSeq = G.oneOf_(
+    enumeratedSeq,
+    iteratedSeq,
+    repeatedSeq,
+    cycledSeq,
+    indexedSeq,
+    iterableSeq,
+    rangeSeq,
+    singletonSeq,
+    replicatedSeq,
+).andThen(s => G.nat.map(n => Seq.cons(n, s)))
+
+const finiteSeq: Gen<Seq<number>> = G.nat.andThen(n =>
+    G.oneOf_(
+        enumeratedSeq.map(s => s.take(n)),
+        iteratedSeq.map(s => s.take(n)),
+        repeatedSeq.map(s => s.take(n)),
+        indexedSeq.map(s => s.take(n)),
+        cycledSeq.map(s => s.take(n)),
+        consSeq.map(s => s.take(n)),
+        iterableSeq,
+        rangeSeq,
+        singletonSeq,
+        replicatedSeq,
+    ),
+)
 
 describe("Seq", () => {
     describe("all", () => {
@@ -25,40 +92,46 @@ describe("Seq", () => {
         })
     })
 
-    describe("collect", () => {
-        it("sanity: roundtrips", () => {
-            expect(new Seq([1, 2, 3]).collect(false)).toEqual([1, 2, 3])
-            expect(new Seq(["a", "b", "c"]).collect(true)).toEqual([
-                "a",
-                "b",
-                "c",
-            ])
-        })
+    // Uncons properties
+    const nonEmptyAlwaysHasAHead = (xs: Seq<unknown>) => {
+        const [h, _] = xs.unCons()
+        return h !== undefined
+    }
 
-        it("collecting the same sequence twice gives same result", () => {
-            const xs = Seq.enumFrom(0).take(4)
-            const ys = Seq.iterate(x => 2 * x, 1).take(4)
-            const zs = new Seq([1, 2, 3]).map(x => x / 2)
-            expect(xs.collect()).toEqual(xs.collect())
-            expect(ys.collect()).toEqual(ys.collect())
-            expect(zs.collect()).toEqual(zs.collect())
-        })
-    })
+    const emptyNeverHasAHead = (xs: Seq<unknown>) => {
+        const [h, _] = xs.unCons()
+        return h === undefined
+    }
 
-    it("sanity: finite generators create finite sequences", () => {
-        const xs = Seq.fromIndexedGenerator(i => (i < 3 ? i : undefined))
+    given(consSeq).operation("unCons").shouldSatisfy(nonEmptyAlwaysHasAHead)
+    given(emptySeq).operation("unCons").shouldSatisfy(emptyNeverHasAHead)
 
-        expect(xs.collect()).toEqual([0, 1, 2])
-    })
+    // Collect properties
+    const roundtrips = (xs: number[]) => {
+        expect(new Seq(xs).collect(true)).toEqual(xs)
+    }
 
-    describe("cons", () => {
-        it("sanity: adds an element to a sequence", () => {
-            const xs = Seq.fromRange(0, 3)
-            const ys = Seq.cons(10, xs).collect()
+    const roundtripsNoCopy = (xs: number[]) => {
+        expect(new Seq(xs).collect(false)).toEqual(xs)
+    }
 
-            expect(ys).toEqual([10, 0, 1, 2, 3])
-        })
-    })
+    const collectIsIdempotent = (xs: Seq<unknown>) => {
+        expect(xs.collect()).toEqual(xs.collect())
+    }
+
+    given(G.arrayOf(G.nat)).operation("collect").shouldSatisfy(roundtrips)
+    given(G.arrayOf(G.nat)).operation("collect").shouldSatisfy(roundtripsNoCopy)
+    given(finiteSeq).operation("collect").shouldSatisfy(collectIsIdempotent)
+
+    // Cons properties
+    const addsElement = (x: unknown, xs: Seq<unknown>) => {
+        const consed = Seq.cons(x, xs)
+        const spreadConsed = [...consed]
+        const spread = [x, ...xs]
+        expect(spreadConsed).toEqual(spread)
+    }
+
+    given(G.nat, finiteSeq).operation("cons").shouldSatisfy(addsElement)
 
     describe("unCons", () => {
         it("sanity: gets head + tail of simple sequences", () => {
@@ -75,6 +148,13 @@ describe("Seq", () => {
         })
     })
 
+    // Cycle properties
+    const cyclingEmptyIsEmpty = (xs: Seq<unknown>) => {
+        expect(xs.collect()).toEqual([])
+    }
+
+    given(emptySeq).operation("cycle").shouldSatisfy(cyclingEmptyIsEmpty)
+
     describe("cycle", () => {
         it("repeats a sequence", () => {
             const xs = Seq.cycle([1]).take(3).collect()
@@ -90,17 +170,19 @@ describe("Seq", () => {
         })
     })
 
+    // Drop properties
+    const dropOnEmptyIsNoop = (xs: Seq<unknown>, n: number) => {
+        expect(xs.drop(n).collect()).toEqual([])
+    }
+
+    const Drop0IsNoop = (xs: Seq<unknown>) => {
+        expect(xs.collect()).toEqual(xs.drop(0).collect())
+    }
+
+    given(emptySeq, posInt).operation("drop").shouldSatisfy(dropOnEmptyIsNoop)
+    given(finiteSeq).operation("drop").shouldSatisfy(Drop0IsNoop)
+
     describe("drop", () => {
-        it("does nothing on an empty sequence", () => {
-            const xs = Seq.empty().drop(10).collect()
-            expect(xs).toEqual([])
-        })
-
-        it("does nothing when dropping 0 elements", () => {
-            const xs = new Seq([1, 2, 3]).drop(0).collect()
-            expect(xs).toEqual([1, 2, 3])
-        })
-
         it("drops n elements from a non-empty sequence", () => {
             const xs = new Seq([1, 2, 3, 4, 5, 6]).drop(3).collect()
             expect(xs).toEqual([4, 5, 6])
@@ -167,65 +249,76 @@ describe("Seq", () => {
         })
     })
 
-    describe("concat laws", () => {
-        it("satisfies associativity", () => {
-            const xs = new Seq([1, 2, 3])
-            const ys = new Seq([4, 5, 6])
-            const zs = new Seq([7, 8, 9])
+    // Concat properties
+    const associativity = (
+        xs: Seq<unknown>,
+        ys: Seq<unknown>,
+        zs: Seq<unknown>,
+    ) => {
+        expect(xs.concat(ys).concat(zs).collect()).toEqual(
+            xs.concat(ys.concat(zs)).collect(),
+        )
+    }
+    const leftIdentity = (xs: Seq<unknown>) => {
+        const empty: Seq<unknown> = Seq.empty()
+        expect(empty.concat(xs).collect()).toEqual(xs.collect())
+    }
+    const rightIdentity = (xs: Seq<unknown>) => {
+        const empty: Seq<unknown> = Seq.empty()
+        expect(xs.concat(empty).collect()).toEqual(xs.collect())
+    }
 
-            expect(xs.concat(ys).concat(zs).collect()).toEqual(
-                xs.concat(ys.concat(zs)).collect(),
-            )
-        })
+    given(finiteSeq, finiteSeq, finiteSeq)
+        .operation("concat")
+        .shouldSatisfy(associativity)
 
-        it("satisfies left identity", () => {
-            const empty: Seq<number> = Seq.empty()
-            const xs = new Seq([1, 2, 3])
+    given(finiteSeq).operation("concat").shouldSatisfy(leftIdentity)
+    given(finiteSeq).operation("concat").shouldSatisfy(rightIdentity)
 
-            expect(empty.concat(xs).collect()).toEqual(xs.collect())
-        })
+    // Map properties
+    const identity = (xs: Seq<unknown>) => {
+        const ys = xs.map(id)
 
-        it("satisfies right identity", () => {
-            const empty: Seq<number> = Seq.empty()
-            const xs = new Seq([1, 2, 3])
+        expect(ys.collect()).toEqual(xs.collect())
+    }
 
-            expect(xs.concat(empty).collect()).toEqual(xs.collect())
-        })
-    })
+    given(finiteSeq).operation("map").shouldSatisfy(identity)
 
-    describe("map laws", () => {
-        it("satisfies identity", () => {
-            const xs = new Seq([1, 2, 3]).map(id).collect()
+    // ConcatMap properties
+    const concatMap = {
+        leftIdentity: (x: unknown, f: (x: unknown) => Iterable<unknown>) => {
+            const ys = Seq.singleton(x).concatMap(f).collect()
+            expect(ys).toEqual([...f(x)])
+        },
+        rightIdentity: (xs: Seq<unknown>) => {
+            const ys = xs.concatMap(Seq.singleton).collect()
 
-            expect(xs).toEqual([1, 2, 3])
-        })
-    })
-
-    describe("concatMap laws", () => {
-        it("satisfies left identity", () => {
-            const f = (x: number) => [x, 2 * x]
-            const xs = Seq.singleton(1).concatMap(f).collect()
-
-            expect(xs).toEqual(f(1))
-        })
-
-        it("satisfies right identity", () => {
-            const xs = [1, 2, 3, 4]
-            const ys = new Seq(xs).concatMap(Seq.singleton).collect()
-
-            expect(xs).toEqual(ys)
-        })
-
-        it("satisfies associativity", () => {
-            const f = (x: number) => descending(x).map(y => y.toString())
+            expect(ys).toEqual(xs.collect())
+        },
+        associativity: (xs: Seq<number>) => {
+            // These are a bit silly, but the performance penalty of using
+            // the fn generator is currently a bit too much...
+            const f = (x: number) =>
+                descending(Math.floor(x / 2)).map(y => y.toString())
             const g = (s: string) => repeat(s, 2)
 
-            const xs = new Seq([0, 1, 3, 5])
             expect(xs.concatMap(f).concatMap(g).collect()).toEqual(
                 xs.concatMap(x => new Seq(f(x)).concatMap(g)).collect(),
             )
-        })
-    })
+        },
+    }
+
+    given(G.nat, G.fn(finiteSeq, 20))
+        .operation("concatMap")
+        .shouldSatisfy(concatMap.leftIdentity)
+
+    given(finiteSeq)
+        .operation("concatMap")
+        .shouldSatisfy(concatMap.rightIdentity)
+
+    given(finiteSeq)
+        .operation("concatMap")
+        .shouldSatisfy(concatMap.associativity)
 
     describe("splitAt", () => {
         it("sanity: works for doc example", () => {
@@ -562,12 +655,7 @@ const repeat = <T>(x: T, n: number) => {
 
     return result
 }
-const descending = (x: number) => {
-    const result: number[] = []
-    for (let i = 0; i <= x; ++i) {
-        result.push(i)
-    }
+const descending = (x: number) =>
+    Seq.fromIndexedGenerator(i => (i <= x && i <= 3 ? x * i : undefined))
 
-    return result
-}
 const even = (x: number) => x % 2 === 0
