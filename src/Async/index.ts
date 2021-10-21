@@ -6,16 +6,16 @@ declare module "./AsyncSeq" {
         /**
          * Collects the async sequence into a synchronous one.
          *
+         * @remarks
          * This method will evaluate the entire sequence.
          *
-         * @returns {Promise<Seq<T>>} The promise of a regular synchronous
-         *                            sequence.
+         * @returns The promise of a regular synchronous sequence.
          */
         collectSeq(): Promise<Seq<T>>
     }
 }
 
-AsyncSeq.prototype.collectSeq = function() {
+AsyncSeq.prototype.collectSeq = function () {
     return this.collect().then(arr => new Seq(arr))
 }
 
