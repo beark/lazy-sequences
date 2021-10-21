@@ -1,6 +1,6 @@
 /* @internal */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isIterable(x: any): x is Iterable<any> {
+export function isIterable(x: any): x is Iterable<unknown> {
     return typeof x[Symbol.iterator] === "function"
 }
 
