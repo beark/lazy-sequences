@@ -25,6 +25,9 @@
     "repository": "github:beark/lazy-sequences",
     "homepage": "https://github.com/beark/lazy-sequences",
     "bugs": "https://github.com/beark/lazy-sequences/issues",
+    "engines": {
+        "node": ">= 12.17.0"
+    },
     "scripts": {
         "build": "tsc -p tsconfig.json",
         "lint": "eslint 'src/**'",
