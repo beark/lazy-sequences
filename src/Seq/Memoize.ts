@@ -4,7 +4,7 @@ export class MemoizingIterable<T> implements Iterable<T> {
     partialState?: PartialEvalState<T>
 
     constructor(iter: Iterable<T>) {
-        if (iter instanceof Array) {
+        if (Array.isArray(iter)) {
             this.evaluatedData = iter
         } else {
             this.evaluatedData = []
