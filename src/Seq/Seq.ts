@@ -29,8 +29,8 @@ export class Seq<T> implements Iterable<T> {
      * @param xs - The sequence to prepend to.
      * @returns The sequence starting with `x`, followed by `xs`
      */
-    static cons<T>(x: T, xs: Iterable<T>): Seq<T> {
-        return new Seq(new ConsIterable(x, xs))
+    static cons<T, U>(x: T, xs: Iterable<U>): Seq<T | U> {
+        return new Seq(new ConsIterable<T | U>(x, xs))
     }
 
     /**
@@ -64,7 +64,7 @@ export class Seq<T> implements Iterable<T> {
      * @nosideeffects
      * @returns An empty sequence.
      */
-    static empty<T>(): Seq<T> {
+    static empty(): Seq<never> {
         return new Seq([])
     }
 

@@ -32,9 +32,9 @@ const rangeSeq = G.nat
     )
 const singletonSeq = G.nat.map(n => Seq.singleton(n))
 const replicatedSeq = G.nat.map(n => Seq.replicate(n, n))
-const emptySeq: Gen<Seq<unknown>> = G.oneOf_(
+const emptySeq = G.oneOf_(
     Gen.const(Seq.empty()),
-    Gen.const(Seq.fromIndexedGenerator(() => undefined)),
+    Gen.const(Seq.fromIndexedGenerator(() => undefined as any as never)),
     Gen.const(Seq.cycle([])),
     Gen.const(Seq.enumFrom(0).take(0)),
     Gen.const(Seq.enumFrom(0).drop(Infinity)),
@@ -50,6 +50,7 @@ const consSeq = G.oneOf_(
     rangeSeq,
     singletonSeq,
     replicatedSeq,
+    emptySeq,
 ).andThen(s => G.nat.map(n => Seq.cons(n, s)))
 
 const finiteSeq: Gen<Seq<number>> = G.nat.andThen(n =>
@@ -64,6 +65,7 @@ const finiteSeq: Gen<Seq<number>> = G.nat.andThen(n =>
         rangeSeq,
         singletonSeq,
         replicatedSeq,
+        emptySeq,
     ),
 )
 
