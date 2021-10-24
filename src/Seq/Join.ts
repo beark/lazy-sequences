@@ -1,6 +1,6 @@
 /* @internal */
 export class JoinIterable<T> implements Iterable<T> {
-    constructor(private xss: Iterable<Iterable<T>>) {}
+    constructor(private readonly xss: Iterable<Iterable<T>>) {}
 
     [Symbol.iterator]() {
         return join(this.xss)

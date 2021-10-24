@@ -1,4 +1,4 @@
-import { IndexedValue } from "../common"
+import type { IndexedValue } from "../common"
 import { ConcatIterable } from "./Concat"
 import { ConsIterable } from "./Cons"
 import { CycleIterable } from "./Cycle"
@@ -238,7 +238,7 @@ export class Seq<T> implements Iterable<T> {
      *   The root iterable that will serve as source of the elements in the
      *   sequence.
      */
-    constructor(private xs: Iterable<T>) {}
+    constructor(private readonly xs: Iterable<T>) {}
 
     [Symbol.iterator](): Iterator<T> {
         return this.xs[Symbol.iterator]()

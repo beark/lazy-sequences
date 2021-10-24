@@ -1,8 +1,11 @@
 /* @internal */
 export class ZipIterable<T, U> implements Iterable<[T, U]> {
-    constructor(private iter1: Iterable<T>, private iter2: Iterable<U>) {}
+    constructor(
+        private readonly iter1: Iterable<T>,
+        private readonly iter2: Iterable<U>,
+    ) {}
 
-    [Symbol.iterator](): Iterator<[T, U]> {
+    [Symbol.iterator]() {
         return new ZipIterator(
             this.iter1[Symbol.iterator](),
             this.iter2[Symbol.iterator](),
@@ -13,12 +16,12 @@ export class ZipIterable<T, U> implements Iterable<[T, U]> {
 /* @internal */
 export class ZipWithIterable<S, T, U> implements Iterable<U> {
     constructor(
-        private f: (x: S, y: T) => U,
-        private iter1: Iterable<S>,
-        private iter2: Iterable<T>,
+        private readonly f: (x: S, y: T) => U,
+        private readonly iter1: Iterable<S>,
+        private readonly iter2: Iterable<T>,
     ) {}
 
-    [Symbol.iterator](): Iterator<U> {
+    [Symbol.iterator]() {
         return new ZipWithIterator(
             this.f,
             this.iter1[Symbol.iterator](),
@@ -27,8 +30,11 @@ export class ZipWithIterable<S, T, U> implements Iterable<U> {
     }
 }
 
-class ZipIterator<T, U> implements Iterator<[T, U]> {
-    constructor(private it1: Iterator<T>, private it2: Iterator<U>) {}
+class ZipIterator<T, U> implements Iterator<[T, U], void> {
+    constructor(
+        private readonly it1: Iterator<T>,
+        private readonly it2: Iterator<U>,
+    ) {}
 
     next(): IteratorResult<[T, U]> {
         const r1 = this.it1.next()
@@ -45,11 +51,11 @@ class ZipIterator<T, U> implements Iterator<[T, U]> {
     }
 }
 
-class ZipWithIterator<S, T, U> implements Iterator<U> {
+class ZipWithIterator<S, T, U> implements Iterator<U, void> {
     constructor(
-        private f: (x: S, y: T) => U,
-        private it1: Iterator<S>,
-        private it2: Iterator<T>,
+        private readonly f: (x: S, y: T) => U,
+        private readonly it1: Iterator<S>,
+        private readonly it2: Iterator<T>,
     ) {}
 
     next(): IteratorResult<U> {

@@ -1,6 +1,6 @@
 /* @internal */
 export class ConsAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private x: T | Promise<T>, private xs: AsyncIterable<T>) {}
+    constructor(private readonly x: T | Promise<T>, private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return consAsync(this.x, this.xs)

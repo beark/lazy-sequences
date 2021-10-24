@@ -1,6 +1,6 @@
 /* @internal */
 export class ConsIterable<T> implements Iterable<T> {
-    constructor(private x: T, private xs: Iterable<T>) {}
+    constructor(private readonly x: T, private readonly xs: Iterable<T>) {}
 
     [Symbol.iterator]() {
         return cons(this.x, this.xs)

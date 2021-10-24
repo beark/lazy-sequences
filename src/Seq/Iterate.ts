@@ -1,6 +1,6 @@
 /* @internal */
 export class IterateIterable<T> implements Iterable<T> {
-    constructor(private f: (x: T) => T, private x: T) {}
+    constructor(private readonly f: (x: T) => T, private readonly x: T) {}
 
     [Symbol.iterator]() {
         return iterate(this.f, this.x)

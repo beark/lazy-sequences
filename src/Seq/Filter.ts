@@ -1,6 +1,9 @@
 /* @internal */
 export class FilterIterable<T> implements Iterable<T> {
-    constructor(private p: (x: T) => boolean, private xs: Iterable<T>) {}
+    constructor(
+        private readonly p: (x: T) => boolean,
+        private readonly xs: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return filter(this.p, this.xs)

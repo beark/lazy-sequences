@@ -1,6 +1,9 @@
 /* @internal */
 export class ConcatIterable<T> implements Iterable<T> {
-    constructor(private xs: Iterable<T>, private ys: Iterable<T>) {}
+    constructor(
+        private readonly xs: Iterable<T>,
+        private readonly ys: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return concatIters(this.xs, this.ys)

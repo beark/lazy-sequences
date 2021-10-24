@@ -1,6 +1,6 @@
 /* @internal */
 export class IterateAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private f: (x: T) => Promise<T> | T, private x: T) {}
+    constructor(private readonly f: (x: T) => Promise<T> | T, private readonly x: T) {}
 
     [Symbol.asyncIterator]() {
         return iterateAsync(this.f, this.x)
@@ -9,7 +9,7 @@ export class IterateAsyncIterable<T> implements AsyncIterable<T> {
 
 /* @internal */
 export class AsyncFromIterable<T> implements AsyncIterable<T> {
-    constructor(private xs: Iterable<T | Promise<T>>) {}
+    constructor(private readonly xs: Iterable<T | Promise<T>>) {}
 
     [Symbol.asyncIterator]() {
         return fromIterableAsync(this.xs)

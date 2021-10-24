@@ -1,6 +1,6 @@
 /* @internal */
 export class FilterAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private p: (x: T) => boolean, private xs: AsyncIterable<T>) {}
+    constructor(private readonly p: (x: T) => boolean, private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return filterAsync(this.p, this.xs)

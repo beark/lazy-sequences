@@ -1,6 +1,6 @@
 /* @internal */
 export class DropIterable<T> implements Iterable<T> {
-    constructor(private n: number, private xs: Iterable<T>) {}
+    constructor(private readonly n: number, private readonly xs: Iterable<T>) {}
 
     [Symbol.iterator]() {
         return drop(this.n, this.xs)
@@ -9,7 +9,10 @@ export class DropIterable<T> implements Iterable<T> {
 
 /* @internal */
 export class DropWhileIterable<T> implements Iterable<T> {
-    constructor(private p: (x: T) => boolean, private xs: Iterable<T>) {}
+    constructor(
+        private readonly p: (x: T) => boolean,
+        private readonly xs: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return dropWhile(this.p, this.xs)

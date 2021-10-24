@@ -5,7 +5,10 @@ export function isIterable(x: any): x is Iterable<unknown> {
 }
 
 /* @internal */
-export function* enumFrom(start: number, step: number) {
+export function* enumFrom(
+    start: number,
+    step: number,
+): Generator<number, void, void> {
     for (let i = start; ; i += step) {
         yield i
     }

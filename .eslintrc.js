@@ -2,27 +2,56 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     parserOptions: {
         sourceType: "module",
+        project: ["./tsconfig.json"],
     },
     plugins: ["@typescript-eslint"],
     rules: {
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/array-type": "error",
-        "@typescript-eslint/ban-types": "error",
-        "@typescript-eslint/explicit-member-accessibility": "off",
-        "@typescript-eslint/indent": "off",
-        "@typescript-eslint/interface-name-prefix": "off",
-        "@typescript-eslint/member-delimiter-style": "off",
-        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/ban-types": [
+            "error",
+            {
+                types: {
+                    Boolean: {
+                        message: "Prefer boolean",
+                        fixWith: "boolean",
+                    },
+                    Function: {
+                        message:
+                            "Function is an unsafe type, allowing unexpected assignments",
+                        fixWith: "() => void",
+                    },
+                    Number: {
+                        message: "Prefer number",
+                        fixWith: "number",
+                    },
+                    String: {
+                        message: "Prefer string",
+                        fixWith: "string",
+                    },
+                },
+            },
+        ],
+        "@typescript-eslint/consistent-type-assertions": [
+            "error",
+            { assertionStyle: "as", objectLiteralTypeAssertions: "never" },
+        ],
+        "@typescript-eslint/consistent-type-imports": "error",
+        "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-misused-new": "error",
-        "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-parameter-properties": "off",
-        "@typescript-eslint/no-use-before-declare": "off",
-        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-namespace": "error",
         "@typescript-eslint/prefer-for-of": "error",
         "@typescript-eslint/prefer-function-type": "error",
-        "@typescript-eslint/prefer-interface": "off",
-        "@typescript-eslint/prefer-namespace-keyword": "error",
+        "@typescript-eslint/prefer-readonly": "error",
+        "@typescript-eslint/prefer-readonly-parameter-types": [
+            "error",
+            { ignoreInferredTypes: true, treatMethodsAsReadonly: true },
+        ],
+        "@typescript-eslint/prefer-return-this-type": "error",
+        "@typescript-eslint/restrict-plus-operands": "error",
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
         "@typescript-eslint/type-annotation-spacing": "error",
         "@typescript-eslint/unified-signatures": "error",
         "arrow-body-style": "error",
@@ -65,9 +94,23 @@ module.exports = {
     },
     overrides: [
         {
+            files: ["Seq.ts", "AsyncSeq.ts", "index.ts"],
+            rules: {
+                "@typescript-eslint/explicit-module-boundary-types": [
+                    "error",
+                    {
+                        allowArgumentsExplicitlyTypedAsAny: true,
+                    },
+                ],
+            },
+        },
+        {
             files: ["*.spec.ts"],
             rules: {
                 "@typescript-eslint/no-explicit-any": "off",
+                "@typescript-eslint/no-floating-promises": "off",
+                "@typescript-eslint/prefer-readonly-parameter-types": "off",
+                "@typescript-eslint/restrict-plus-operands": "off",
             },
         },
         {

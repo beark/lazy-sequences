@@ -3,9 +3,9 @@ import { enumFrom } from "../common"
 /* @internal */
 export class RangeIterable implements Iterable<number> {
     constructor(
-        private start: number,
-        private stop: number,
-        private step: number,
+        private readonly start: number,
+        private readonly stop: number,
+        private readonly step: number,
     ) {}
 
     [Symbol.iterator]() {
@@ -15,7 +15,10 @@ export class RangeIterable implements Iterable<number> {
 
 /* @internal */
 export class EnumFromIterable implements Iterable<number> {
-    constructor(private start: number, private step: number) {}
+    constructor(
+        private readonly start: number,
+        private readonly step: number,
+    ) {}
 
     [Symbol.iterator]() {
         return enumFrom(this.start, this.step)

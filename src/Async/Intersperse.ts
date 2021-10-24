@@ -1,6 +1,6 @@
 /* @internal */
 export class IntersperseAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private xs: AsyncIterable<T>, private sep: T) {}
+    constructor(private readonly xs: AsyncIterable<T>, private readonly sep: T) {}
 
     [Symbol.asyncIterator]() {
         return intersperseAsync(this.xs, this.sep)
@@ -9,7 +9,7 @@ export class IntersperseAsyncIterable<T> implements AsyncIterable<T> {
 
 /* @internal */
 export class IntercalateAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private xs: AsyncIterable<T>, private sep: Iterable<T>) {}
+    constructor(private readonly xs: AsyncIterable<T>, private readonly sep: Iterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return intercalateAsync(this.xs, this.sep)

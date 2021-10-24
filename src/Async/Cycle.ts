@@ -1,6 +1,6 @@
 /* @internal */
 export class CycleAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private xs: AsyncIterable<T>) {}
+    constructor(private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return cycleAsync(this.xs)

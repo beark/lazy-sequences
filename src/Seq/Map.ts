@@ -1,6 +1,9 @@
 /* @internal */
 export class MapIterable<T, U> implements Iterable<U> {
-    constructor(private f: (x: T) => U, private xs: Iterable<T>) {}
+    constructor(
+        private readonly f: (x: T) => U,
+        private readonly xs: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return map(this.f, this.xs)

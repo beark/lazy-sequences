@@ -1,4 +1,5 @@
-import { enumFrom, IndexedValue } from "../common"
+import type { IndexedValue } from "../common";
+import { enumFrom } from "../common"
 import { ConcatAsyncIterable } from "./Concat"
 import { ConsAsyncIterable } from "./Cons"
 import { CycleAsyncIterable } from "./Cycle"
@@ -122,7 +123,7 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      *   root iterable that will serve as source of the elements in the
      *   sequence.
      */
-    constructor(private xs: AsyncIterable<T>) {}
+    constructor(private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator](): AsyncIterator<T> {
         return this.xs[Symbol.asyncIterator]()

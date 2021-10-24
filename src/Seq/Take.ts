@@ -1,6 +1,6 @@
 /* @internal */
 export class TakeIterable<T> implements Iterable<T> {
-    constructor(private n: number, private xs: Iterable<T>) {}
+    constructor(private readonly n: number, private readonly xs: Iterable<T>) {}
 
     [Symbol.iterator]() {
         return take(this.n, this.xs)
@@ -9,7 +9,10 @@ export class TakeIterable<T> implements Iterable<T> {
 
 /* @internal */
 export class TakeWhileIterable<T> implements Iterable<T> {
-    constructor(private p: (x: T) => boolean, private xs: Iterable<T>) {}
+    constructor(
+        private readonly p: (x: T) => boolean,
+        private readonly xs: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return takeWhile(this.p, this.xs)

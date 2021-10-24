@@ -3,8 +3,8 @@ import { isIterable } from "../common"
 /* @internal */
 export class ConcatAsyncIterable<T> implements AsyncIterable<T> {
     constructor(
-        private xs: AsyncIterable<T>,
-        private ys: AsyncIterable<T> | Iterable<T>,
+        private readonly xs: AsyncIterable<T>,
+        private readonly ys: AsyncIterable<T> | Iterable<T>,
     ) {}
 
     [Symbol.asyncIterator]() {

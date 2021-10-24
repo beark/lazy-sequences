@@ -40,21 +40,32 @@ export class MemoizingIterable<T> implements Iterable<T> {
 
 type PartialEvalState<T> = {
     evaluationIndex: number
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    evaluationIter: Iterator<T, any, any>
+    evaluationIter: Iterator<T>
+}
+
+function hasOwnProperty<T extends object, Prop extends PropertyKey>(
+    obj: T,
+    prop: Prop,
+): obj is T & { [K in Prop]: unknown } {
+    return obj.hasOwnProperty(prop)
 }
 
 /* @internal */
 export function isMemoizingIterable<T>(
     it: Iterable<T>,
 ): it is MemoizingIterable<T> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return "evaluatedData" in it && Array.isArray((it as any).evaluatedData)
+    return (
+        hasOwnProperty(it, "evaluatedData") && Array.isArray(it.evaluatedData)
+    )
 }
 
 class MemoizingIterator<T> implements Iterator<T, void, void> {
     index: number = 0
-    constructor(private mem: MemoizingIterable<T>) {}
+
+    // ESLint erroneously thinks `mem`'s properties are never assigned, but
+    // `mem.partialState` is.
+    // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+    constructor(private readonly mem: MemoizingIterable<T>) {}
 
     next(): IteratorResult<T, void> {
         if (this.mem.partialState !== undefined) {

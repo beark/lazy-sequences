@@ -1,6 +1,6 @@
 /* @internal */
 export class DropAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private n: number, private xs: AsyncIterable<T>) {}
+    constructor(private readonly n: number, private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return dropAsync(this.n, this.xs)
@@ -9,7 +9,7 @@ export class DropAsyncIterable<T> implements AsyncIterable<T> {
 
 /* @internal */
 export class DropWhileAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private p: (x: T) => boolean, private xs: AsyncIterable<T>) {}
+    constructor(private readonly p: (x: T) => boolean, private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return dropWhileAsync(this.p, this.xs)

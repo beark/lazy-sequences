@@ -1,6 +1,6 @@
 /* @internal */
 export class JoinAsyncIterable<T> implements AsyncIterable<T> {
-    constructor(private xss: AsyncIterable<AsyncIterable<T> | Iterable<T>>) {}
+    constructor(private readonly xss: AsyncIterable<AsyncIterable<T> | Iterable<T>>) {}
 
     [Symbol.asyncIterator]() {
         return joinAsync(this.xss)

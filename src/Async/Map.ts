@@ -1,6 +1,6 @@
 /* @internal */
 export class MapAsyncIterable<T, U> implements AsyncIterable<U> {
-    constructor(private f: (x: T) => U, private xs: AsyncIterable<T>) {}
+    constructor(private readonly f: (x: T) => U, private readonly xs: AsyncIterable<T>) {}
 
     [Symbol.asyncIterator]() {
         return mapAsync(this.f, this.xs)

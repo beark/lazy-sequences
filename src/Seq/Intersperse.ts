@@ -1,6 +1,6 @@
 /* @internal */
 export class IntersperseIterable<T> implements Iterable<T> {
-    constructor(private xs: Iterable<T>, private sep: T) {}
+    constructor(private readonly xs: Iterable<T>, private readonly sep: T) {}
 
     [Symbol.iterator]() {
         return intersperse(this.xs, this.sep)
@@ -9,7 +9,10 @@ export class IntersperseIterable<T> implements Iterable<T> {
 
 /* @internal */
 export class IntercalateIterable<T> implements Iterable<T> {
-    constructor(private xs: Iterable<T>, private sep: Iterable<T>) {}
+    constructor(
+        private readonly xs: Iterable<T>,
+        private readonly sep: Iterable<T>,
+    ) {}
 
     [Symbol.iterator]() {
         return intercalate(this.xs, this.sep)
