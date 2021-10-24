@@ -1,4 +1,4 @@
-import type { IndexedValue } from "../common";
+import type { IndexedValue } from "../common"
 import { enumFrom } from "../common"
 import { ConcatAsyncIterable } from "./Concat"
 import { ConsAsyncIterable } from "./Cons"
@@ -46,8 +46,8 @@ export class AsyncSeq<T> implements AsyncIterable<T> {
      * @param xs - The sequence to prepend to.
      * @returns The sequence starting with `x`, followed by `xs`
      */
-    static cons<T>(x: T | Promise<T>, xs: AsyncSeq<T>): AsyncSeq<T> {
-        return new AsyncSeq(new ConsAsyncIterable(x, xs))
+    static cons<T, U>(x: T | Promise<T>, xs: AsyncSeq<U>): AsyncSeq<T | U> {
+        return new AsyncSeq(new ConsAsyncIterable<T | U>(x, xs))
     }
 
     /**

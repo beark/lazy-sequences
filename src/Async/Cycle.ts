@@ -8,9 +8,14 @@ export class CycleAsyncIterable<T> implements AsyncIterable<T> {
 }
 
 async function* cycleAsync<T>(xs: AsyncIterable<T>) {
-    while (true) {
+    let cont = false
+    for await (const x of xs) {
+        yield x
+        cont = true
+    }
+
+    while (cont) {
         for await (const x of xs) {
-            // tslint:disable-next-line
             yield x
         }
     }
